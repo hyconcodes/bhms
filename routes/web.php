@@ -21,5 +21,6 @@ Route::middleware(['guest'])->group(function () {
 Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 // Dashboard
 Route::middleware(['auth'])->group(function () {
-    Route::get('/dashboard', fn() => view('dashboard.home'));
+    Route::get('/dashboard', fn() => view('doctor.home'));
+    Route::get('/patient/create', fn() => view('doctor.create_patient'))->name('patient.create');
 });

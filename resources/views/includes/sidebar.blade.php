@@ -20,11 +20,11 @@
 
         <!-- Brand -->
         <a class="navbar-brand" href="index-2">
-            <img src="assets/bhms/bouestilogo.png" class="navbar-brand-img logo-light logo-small" alt="..." width="19" height="50">
-            <img src="assets/bhms/bouestilogo.png" class="navbar-brand-img logo-light logo-large" alt="..." width="125" height="50">
+            <img src="{{ asset('assets/bhms/bouestilogo.png') }}" class="navbar-brand-img logo-light logo-small" alt="..." width="19" height="50">
+            <img src="{{ asset('assets/bhms/bouestilogo.png') }}" class="navbar-brand-img logo-light logo-large" alt="..." width="125" height="50">
 
-            <img src="assets/bhms/bouestilogo.png" class="navbar-brand-img logo-dark logo-small" alt="..." width="19" height="50">
-            <img src="assets/bhms/bouestilogo.png" class="navbar-brand-img logo-dark logo-large" alt="..." width="125" height="50">
+            <img src="{{ asset('assets/bhms/bouestilogo.png') }}" class="navbar-brand-img logo-dark logo-small" alt="..." width="19" height="50">
+            <img src="{{ asset('assets/bhms/bouestilogo.png') }}" class="navbar-brand-img logo-dark logo-large" alt="..." width="125" height="50">
         </a>
 
         <!-- Navbar toggler -->
@@ -46,9 +46,24 @@
                 <li class="nav-item dropdown">
                     <a class="nav-link" href="#patientCollapse" data-bs-toggle="collapse" role="button" aria-expanded="false" aria-controls="patientCollapse">
                         <i class="bi bi-person nav-link-icon" style="font-size: 18px;"></i>
-                        <span>Patient management</span>
+                        <span>Patient registration</span>
                     </a>
                     <div class="collapse close" id="patientCollapse">
+                        <ul class="nav flex-column">
+                            <li class="nav-item">
+                                <a href="{{ route('patient.create') }}" class="nav-link ">
+                                    <span>Default</span>
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+                </li>
+                <li class="nav-item dropdown">
+                    <a class="nav-link" href="#emrCollapse" data-bs-toggle="collapse" role="button" aria-expanded="false" aria-controls="emrCollapse">
+                        <i class="bi bi-file-earmark-medical nav-link-icon" style="font-size: 18px;"></i>
+                        <span>Electronic Medical Records (EMR)</span>
+                    </a>
+                    <div class="collapse close" id="emrCollapse">
                         <ul class="nav flex-column">
                             <li class="nav-item">
                                 <a href="index-2" class="nav-link ">
@@ -93,7 +108,7 @@
 
             <!-- Info box -->
             <div class="help-box rounded-3 py-5 px-4 text-center mt-auto">
-                <img src="assets/images/illustrations/upgrade-illustration.svg" alt="..." class="img-fluid mb-4" width="160" height="160">
+                <img src="{{ asset('assets/images/illustrations/upgrade-illustration.svg') }}" alt="..." class="img-fluid mb-4" width="160" height="160">
                 <h6>{{ Auth::user()->role->name }} {{ Auth::user()->name }}</h6>
 
                 <!-- Button -->

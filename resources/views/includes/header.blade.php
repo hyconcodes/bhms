@@ -87,7 +87,7 @@
         <!-- Dropdown -->
         <div class="dropdown">
             <a href="javascript: void(0);" class="dropdown-toggle no-arrow d-flex align-items-center justify-content-center bg-white rounded-circle shadow-sm mx-1 mx-lg-2 w-40px h-40px" role="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false" data-bs-offset="0,0">
-                <span class="avatar avatar-circle avatar-xxs"><img class="avatar-img" src="assets/images/flags/1x1/us.svg" alt="..." width="18" height="18"></span>
+                <span class="avatar avatar-circle avatar-xxs"><img class="avatar-img" src="{{ asset('assets/images/flags/1x1/us.svg') }}" alt="..." width="18" height="18"></span>
             </a>
 
             <ul class="dropdown-menu dropdown-menu-end">
@@ -96,7 +96,7 @@
                 </li>
                 <li>
                     <a href="javascript: void(0);" class="dropdown-item active">
-                        <span class="avatar avatar-circle avatar-xxs"><img class="avatar-img" src="assets/images/flags/1x1/us.svg" alt="..." width="18" height="18"></span><span class="text-truncate ms-2">English (US)</span>
+                        <span class="avatar avatar-circle avatar-xxs"><img class="avatar-img" src="{{ asset('assets/images/flags/1x1/us.svg') }}" alt="..." width="18" height="18"></span><span class="text-truncate ms-2">English (US)</span>
                     </a>
                 </li>
                 <li>
@@ -947,7 +947,7 @@
         <div class="dropdown">
             <a href="javascript: void(0);" class="dropdown-toggle no-arrow d-flex align-items-center justify-content-center bg-white rounded-circle shadow-sm mx-1 mx-lg-2 w-40px h-40px" role="button" data-bs-toggle="dropdown" data-bs-auto-close="outside" aria-haspopup="true" aria-expanded="false" data-bs-offset="0,0">
                 <div class="avatar avatar-circle avatar-sm avatar-online">
-                    <img src="assets/images/profiles/profile-06.jpg" alt="..." class="avatar-img" width="40" height="40">
+                    <img src="{{ asset('assets/images/profiles/profile-06.jpg') }}" alt="..." class="avatar-img" width="40" height="40">
                 </div>
             </a>
 
@@ -955,7 +955,7 @@
                 <div class="dropdown-item-text">
                     <div class="d-flex align-items-center">
                         <div class="avatar avatar-sm avatar-circle">
-                            <img src="assets/images/profiles/profile-06.jpg" alt="..." class="avatar-img" width="40" height="40">
+                            <img src="{{ asset('assets/images/profiles/profile-06.jpg') }}" alt="..." class="avatar-img" width="40" height="40">
                         </div>
                         <div class="flex-grow-1 ms-3">
                             <h4 class="mb-0">{{ Auth::user()->role->name }} {{ Auth::user()->name }}</h4>
