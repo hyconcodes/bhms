@@ -19,7 +19,7 @@
     <div class="container-fluid">
 
         <!-- Brand -->
-        <a class="navbar-brand" href="index-2">
+        <a class="navbar-brand" href="">
             <img src="{{ asset('assets/bhms/bouestilogo.png') }}" class="navbar-brand-img logo-light logo-small" alt="..." width="19" height="50">
             <img src="{{ asset('assets/bhms/bouestilogo.png') }}" class="navbar-brand-img logo-light logo-large" alt="..." width="125" height="50">
 
@@ -38,7 +38,7 @@
             <!-- Navigation -->
             <ul class="navbar-nav mb-lg-7">
                 <li class="nav-item">
-                    <a class="nav-link" href="index-2">
+                    <a class="nav-link" href="{{url('/dashboard')}}">
                         <i class="bi bi-grid nav-link-icon" style="font-size: 18px;"></i>
                         <span>Dashboard</span>
                     </a>
@@ -51,8 +51,8 @@
                     <div class="collapse close" id="patientCollapse">
                         <ul class="nav flex-column">
                             <li class="nav-item">
-                                <a href="{{ route('patient.create') }}" class="nav-link ">
-                                    <span>Default</span>
+                                <a href="{{route('admin.create.patient')}}" class="nav-link ">
+                                    <span>New patient</span>
                                 </a>
                             </li>
                         </ul>
@@ -81,8 +81,8 @@
                     <div class="collapse close" id="staffCollapse">
                         <ul class="nav flex-column">
                             <li class="nav-item">
-                                <a href="index-2" class="nav-link ">
-                                    <span>Default</span>
+                                <a href="{{ route('admin.create') }}" class="nav-link ">
+                                    <span>New Staff</span>
                                 </a>
                             </li>
                         </ul>

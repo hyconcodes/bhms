@@ -1,7 +1,7 @@
 @extends('layouts.app')
 @section('content')
 <div class="container-fluid">
-
+    @include('includes.error_or_success_message')
     <!-- Title -->
     <h1 class="h2">
         Dashboard

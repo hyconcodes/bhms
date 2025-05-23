@@ -1,5 +1,7 @@
 <?php
 
+use App\Http\Controllers\AuthController;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -14,6 +16,15 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
-    return $request->user();
-});
+// Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
+//     return $request->user();
+// });
+
+// Route::patch('admin/users/${userId}/toggle-status', [AuthController::class, 'toggleStaffStatus']);
+
+// Route::patch('admin/users/{userId}/toggle-status', function ($userId) {
+//     $user = User::findOrFail($userId);
+//     $user->status = false;
+//     $user->save();
+//     return response()->json(['message' => 'User status updated successfully']);
+// });

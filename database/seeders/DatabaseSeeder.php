@@ -23,11 +23,12 @@ class DatabaseSeeder extends Seeder
         // ]);
 
         User::create([
-            'name' => 'Shodiya Victoria',
-            'email' => 'shodiya@mail.com',
+            'name' => 'Olalekan Olamide',
+            'email' => 'olamide@mail.com',
             'password' => Hash::make('password'),
-            'role_id' => 1,
-            'gender' => 'female',
+            'role_id' => 4, // 4 is the role ID for 'super admin'
+            'gender' => 'male',
+            'avatar' => 'https://api.dicebear.com/9.x/adventurer/svg?seed=Olamide&radius=50',
         ]);
     }
 }

@@ -145,7 +145,7 @@
             html.removeAttribute("dir");
         }
     </script>
-    <title>Login | {{ config('app.name', 'Laravel') }}</title>
+    <title>{{ config('app.name', 'Laravel') }}</title>
 
     <!-- Fonts -->
 
@@ -183,14 +183,14 @@
         <div class="row align-items-center justify-content-center vh-100">
             <div class="col-11 col-sm-8 col-md-6 col-lg-5 col-xl-4 col-xxl-3 py-6">
                 <!-- Title -->
-                <h1 class="mb-2 text-center">Sign In</h1>
+                <h1 class="mb-2 text-center">Kindly reset your password 💊🩸🌡</h1>
 
                 <!-- Subtitle -->
                 <p class="text-secondary text-center">
-                    Enter your email address and password to access to your account.
+                    Enter your email address and prefer password to reset your account.
                 </p>
-                @include('includes.error_or_success_message')
-                <!-- @if ($errors->any())
+
+                @if ($errors->any())
                 <div class="alert alert-danger">
                     <ul class="mb-0">
                         @foreach ($errors->all() as $error)
@@ -198,16 +198,16 @@
                         @endforeach
                     </ul>
                 </div>
-                @endif -->
+                @endif
 
-                <!-- @if (session('error'))
+                @if (session('error'))
                 <div class="alert alert-danger">
                     {{ session('error') }}
                 </div>
-                @endif -->
+                @endif
 
                 <!-- Form -->
-                <form action="{{ route('login.post') }}" method="POST">
+                <form action="{{ route('password.reset.store') }}" method="POST" class="">
                     @csrf
                     <div class="row">
                         <div class="col-12">
@@ -230,15 +230,9 @@
                                 <div class="row">
                                     <div class="col">
                                         <!-- Label -->
-                                        <label class="form-label"> Password </label>
+                                        <label class="form-label"> New Password </label>
                                     </div>
 
-                                    <!-- <div class="col-auto d-none">
-                                        
-                                        <a
-                                            href="reset-password-illustration"
-                                            class="form-text small text-body-secondary link-primary">Forgot password</a>
-                                    </div> -->
                                 </div>
                                 <!-- / .row -->
 
@@ -259,30 +253,48 @@
                                 </div>
                             </div>
                         </div>
+                        <div class="col-12">
+                            <!-- Password -->
+                            <div class="mb-4">
+                                <div class="row">
+                                    <div class="col">
+                                        <!-- Label -->
+                                        <label class="form-label">Confirm New Password </label>
+                                    </div>
+
+                                </div>
+                                <!-- / .row -->
+
+                                <!-- Input -->
+                                <div class="input-group input-group-merge">
+                                    <input
+                                        type="password"
+                                        class="form-control"
+                                        name="password_confirmation"
+                                        autocomplete="off"
+                                        data-toggle-password-input
+                                        placeholder="Confirm your password" />
+
+                                    <button
+                                        type="button"
+                                        class="input-group-text px-4 text-secondary link-primary"
+                                        data-toggle-password></button>
+                                </div>
+                            </div>
+                        </div>
+
                     </div>
                     <!-- / .row -->
-
-                    <div class="form-check">
-                        <!-- Input -->
-                        <input type="checkbox" class="form-check-input" id="remember" />
-
-                        <!-- Label -->
-                        <label class="form-check-label" for="remember">
-                            Remember me
-                        </label>
-                    </div>
 
                     <div class="row align-items-center text-center">
                         <div class="col-12">
                             <!-- Button -->
                             <button type="submit" class="btn w-100 btn-primary mt-6 mb-2">
-                                Sign in
+                                Reset
                             </button>
                         </div>
-                        <!-- <div class="col-12">
-                            <small class="mb-0 text-body-secondary">Don't have an account yet?
-                                <a href="sign-up-basic" class="fw-semibold">Sign up</a></small>
-                        </div> -->
+
+                        
                     </div>
                     <!-- / .row -->
                 </form>
