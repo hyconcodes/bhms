@@ -279,42 +279,60 @@
             </div>
 
             <!-- Card -->
+
             <div class="card border-0 scroll-mt-3" id="deleteAccountSection">
-                <div class="card-header">
-                    <h2 class="h3 mb-0">Delete Account</h2>
-                </div>
-
-                <div class="card-body">
-                    <div class="alert text-bg-danger-soft d-flex align-items-center" role="alert">
-                        <div>
-                            <i class="bi bi-exclamation-triangle-fill text-danger me-3" style="font-size: 2rem;"></i>
-                        </div>
-                        <div>
-                            <h4 class="mb-0">If you delete your account, you will lose all your data</h4>
-                            Take a backup of your data
-                        </div>
+                <form id="deleteAccountForm" action="{{ route('admin.profile.delete_account') }}" method="POST" novalidate>
+                    @csrf
+                    @method('DELETE')
+                    <div class="card-header">
+                        <h2 class="h3 mb-0">Delete Account</h2>
                     </div>
 
-                    <div class="mb-3">
-                        <div class="form-check">
-
-                            <!-- Input -->
-                            <input type="checkbox" class="form-check-input" id="deleteAccount">
-
-                            <!-- Label -->
-                            <label class="form-check-label" for="deleteAccount">
-                                I confirm that I'd like to delete my account
-                            </label>
+                    <div class="card-body">
+                        <div class="alert text-bg-danger-soft d-flex align-items-center" role="alert">
+                            <div>
+                                <i class="bi bi-exclamation-triangle-fill text-danger me-3" style="font-size: 2rem;"></i>
+                            </div>
+                            <div>
+                                <h4 class="mb-0">If you delete your account, you will lose all your data</h4>
+                                Take a backup of your data
+                            </div>
                         </div>
-                    </div>
 
-                    <div class="d-flex justify-content-end mt-5">
+                        <div class="mb-3">
+                            <div class="form-check">
+                                <input type="checkbox" class="form-check-input" id="deleteAccountCheckbox" required>
+                                <label class="form-check-label" for="deleteAccountCheckbox">
+                                    I confirm that I'd like to delete my account
+                                </label>
+                            </div>
+                        </div>
 
-                        <!-- Button -->
-                        <button type="button" class="btn btn-danger">Delete account</button>
+                        @if(!$user->role || strtolower($user->role->name) !== 'super admin')
+                            <div class="d-flex justify-content-end mt-5">
+                                <button type="submit" class="btn btn-danger" id="deleteAccountBtn" disabled>Delete account</button>
+                            </div>
+                        @endif
                     </div>
-                </div>
+                </form>
             </div>
+            <script>
+                document.addEventListener('DOMContentLoaded', function () {
+                    const checkbox = document.getElementById('deleteAccountCheckbox');
+                    const btn = document.getElementById('deleteAccountBtn');
+                    const form = document.getElementById('deleteAccountForm');
+
+                    checkbox.addEventListener('change', function () {
+                        btn.disabled = !this.checked;
+                    });
+
+                    form.addEventListener('submit', function (e) {
+                        if (!confirm('Are you sure you want to delete your account? This action cannot be undone.')) {
+                            e.preventDefault();
+                        }
+                    });
+                });
+            </script>
             <!-- </form> -->
         </div>
     </div> <!-- / .row -->

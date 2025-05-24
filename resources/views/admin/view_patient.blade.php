@@ -1,11 +1,11 @@
 @extends('layouts.app')
-@section('title', 'Staff Account')
+@section('title', 'Student Account')
 @section('content')
 <div class="container-fluid">
     @include('includes.error_or_success_message')
     <div class="d-flex align-items-baseline justify-content-between">
         <!-- Title -->
-        <h1 class="h2">Staff</h1>
+        <h1 class="h2">Student</h1>
 
         <!-- Breadcrumb -->
         <nav aria-label="breadcrumb">
@@ -13,7 +13,7 @@
                 <li class="breadcrumb-item">
                     <a href="javascript: void(0);">Pages</a>
                 </li>
-                <li class="breadcrumb-item active" aria-current="page">Staff</li>
+                <li class="breadcrumb-item active" aria-current="page">Patient</li>
             </ol>
         </nav>
     </div>
@@ -58,16 +58,16 @@
 
                             </div>
                         </div>
-
+                        
                         <div
-                            class="col-12 col-md-auto ms-auto text-center mt-8 mt-md-0">
-                            <div class="hstack d-inline-flex gap-4">
-                                <div>
+                        class="col-12 col-md-auto ms-auto text-center mt-8 mt-md-0">
+                        <div class="hstack d-inline-flex gap-4">
+                                <div class="vr"></div>
+                                <!-- <div>
                                     <h4 class="h2 mb-0">42</h4>
                                     <p class="text-secondary mb-0">Active Appoinment</p>
-                                </div>
+                                </div> -->
 
-                                <div class="vr"></div>
 
                                 <div>
                                     @if($user->status)

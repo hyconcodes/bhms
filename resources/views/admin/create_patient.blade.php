@@ -1,15 +1,15 @@
 @extends('layouts.app')
 @section('title', 'Staff Registration')
-@include('includes.newstaff_modal')
+@include('includes.new_patient_modal')
 @section('content')
 <div class="container-fluid">
     @include('includes.error_or_success_message')
     <div class="d-flex flex-column flex-md-row justify-content-between align-items-center mb-4">
-        <h3>Create new staff</h3>
+        <h3>Create new Patient</h3>
 
         <div class="d-flex flex-row justify-content-between align-items-center">
 
-            <form class="d-md-inline-block me-4" id="searchForm" action="{{ route('admin.search') }}" method="GET">
+            <form class="d-md-inline-block me-4" id="searchForm" action="{{ route('patient.search') }}" method="GET">
                 <div class="input-group input-group-merge">
                     <input type="text" name="query" class="form-control bg-light-green border-light-green w-250px" placeholder="Search..." aria-label="Search for any term" value="{{ request('query') }}">
                     <span class="input-group-text bg-light-green border-light-green p-0">
@@ -20,7 +20,7 @@
                 </div>
             </form>
             <div>
-                <a href="#" class="btn btn-sm btn-primary" data-bs-toggle="modal" data-bs-target="#newStaffModal" id="btnAddEvent">New Staff</a>
+                <a href="#" class="btn btn-sm btn-primary" data-bs-toggle="modal" data-bs-target="#newPatientModal" id="btnAddEvent">New Patient</a>
             </div>
         </div>
     </div>
@@ -36,7 +36,7 @@
 
                     <!-- Title -->
                     <h2 class="card-header-title h4 text-uppercase">
-                        All Staffs
+                        All Patient
                     </h2>
 
                     <!-- Dropdown -->
@@ -79,11 +79,6 @@
                                     </a>
                                 </th>
                                 <th>
-                                    <a href="javascript: void(0);" class="text-body-secondary list-sort" data-sort="id">
-                                        Position
-                                    </a>
-                                </th>
-                                <th>
                                     <a href="javascript: void(0);" class="text-body-secondary list-sort text-center" data-sort="id">
                                         Joined
                                     </a>
@@ -119,11 +114,6 @@
                                 </td>
                                 <td class="email">{{ $user->email }}</td>
                                 <td class="id">
-                                    <span class="badge bg-primary">
-                                        {{ $user->role->name }}
-                                    </span>
-                                </td>
-                                <td class="id">
                                     <span class="badge bg-light text-dark">
                                         <!-- {{ $user->created_at->diffForHumans() }} --> 
                                         <!-- {{ $user->created_at->diffInDays() }} days ago -->
@@ -144,7 +134,7 @@
                                     @endif
                                 </td>
                                 <td class="text-center">
-                                    <a href="{{ route('admin.view', $user->id) }}" class="btn btn-sm btn-info me-1" title="View">
+                                    <a href="{{ route('admin.patient.view', $user->id) }}" class="btn btn-sm btn-info me-1" title="View">
                                         <i class="bi bi-eye"></i> View
                                     </a>
                                     <form action="{{ route('admin.toggleStatus', $user->id) }}" method="POST" class="d-inline">
