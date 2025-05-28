@@ -22,13 +22,15 @@ class DatabaseSeeder extends Seeder
         //     'email' => 'test@example.com',
         // ]);
 
-        User::create([
-            'name' => 'Olalekan Olamide',
-            'email' => 'olamide@mail.com',
-            'password' => Hash::make('password'),
-            'role_id' => 4, // 4 is the role ID for 'super admin'
-            'gender' => 'male',
-            'avatar' => 'https://api.dicebear.com/9.x/adventurer/svg?seed=Olamide&radius=50',
-        ]);
+        // User::create([
+        //     'name' => 'Olalekan Olamide',
+        //     'email' => 'olamide@mail.com',
+        //     'password' => Hash::make('password'),
+        //     'role_id' => 4, // 4 is the role ID for 'super admin'
+        //     'gender' => 'male',
+        //     'avatar' => 'https://api.dicebear.com/9.x/adventurer/svg?seed=Olamide&radius=50',
+        // ]);
+
+        // User::where('role_id', 5)->delete(); // 5 is the role_id for students
     }
 }

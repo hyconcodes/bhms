@@ -1,8 +1,10 @@
 <?php
 
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\EMRController;
 use App\Http\Controllers\PatientController;
 use App\Models\Role;
+use App\Models\Setting;
 use App\Models\User;
 use Illuminate\Support\Facades\Route;
 
@@ -57,6 +59,7 @@ Route::middleware(['auth'])->group(function () {
     })->name('admin.view');
     Route::get('/admin/profile', function () {
         $user = auth()->user();
+        $api_url = Setting::first()?->api_url;
         $countries = [
             'Afghanistan',
             'Aland Islands',
@@ -306,20 +309,23 @@ Route::middleware(['auth'])->group(function () {
             'Zambia',
             'Zimbabwe',
         ];
-        return view('admin.profile', compact('user', 'countries'));
+        return view('admin.profile', compact('user', 'countries', 'api_url'));
     })->name('admin.profile');
     Route::post('/admin/profile', [AuthController::class, 'adminProfileUploadPicture'])->name('admin.profile.upload_picture');
     Route::put('/admin/profile/info', [AuthController::class, 'adminProfileInfo'])->name('admin.profile.update');
     Route::put('/admin/profile/update/password', [AuthController::class, 'adminProfileUpdatePassword'])->name('admin.profile.update_password');
     Route::delete('/admin/account/delete', [AuthController::class, 'adminDeleteAccount'])->name('admin.profile.delete_account');
     Route::patch('/admin/profile/{userId}/update/role', [AuthController::class, 'adminProfileUpdateRole'])->name('admin.users.updateRole');
-
-// FOR PATIENTS
+    Route::patch('/admin/update/api', [AuthController::class, 'adminUpdateApiUrl'])->name('admin.update_api_url');
+    // FOR CREATING PATIENTS by admin
     Route::get('/admin/create/patient', function () {
+        $api_url = Setting::first()?->api_url;
+        // dd($api_url);
         $roles = Role::where('name', 'student')->get();
         $users = User::whereHas('role', fn($query) => $query->where('name', 'student'))
             ->orderBy('updated_at', 'desc')->paginate(8);
         return view('admin.create_patient', [
+            'api_url' => $api_url,
             'roles' => $roles,
             'users' => $users,
         ]);
@@ -335,3 +341,10 @@ Route::middleware(['auth'])->group(function () {
         ]);
     })->name('admin.patient.view');
 });
+// Electronic Medical Records (EMR)
+Route::get('/admin/emr', [EMRController::class, 'index'])->name('admin.emr.index');
+Route::patch('/admin/emr/patient/{userId}.updateBioData', [EMRController::class, 'updateBioData'])->name('admin.patient.updateBioData');
+Route::patch('/admin/emr/patient/{userId}.updateMedicalHistory', [EMRController::class, 'updateMedicalHistory'])->name('admin.patient.updateMedicalHistory');
+Route::patch('/admin/emr/patient/{userId}.updateInvestigationResults', [EMRController::class, 'updateInvestigationResults'])->name('admin.patient.updateInvestigationResults');
+Route::get('/admin/emr/patient/{userId}.downloadPDF', [EMRController::class, 'downloadPDF'])->name('admin.patient.downloadPDF');
+Route::get('/admin/emr/patient/search', [EMRController::class, 'emrSearchPatient'])->name('emr.patient.search');

@@ -1,15 +1,14 @@
 @extends('layouts.app')
-@section('title', 'Student Registration')
-@include('includes.new_patient_modal')
+@section('title', 'Electronic Medical Records (EMR)')
 @section('content')
 <div class="container-fluid">
     @include('includes.error_or_success_message')
     <div class="d-flex flex-column flex-md-row justify-content-between align-items-center mb-4">
-        <h3>Create new Patient</h3>
+        <h3>Electronic Medical Records (EMR)</h3>
 
         <div class="d-flex flex-row justify-content-between align-items-center">
 
-            <form class="d-md-inline-block me-4" id="searchForm" action="{{ route('patient.search') }}" method="GET">
+            <form class="d-md-inline-block me-4" id="searchForm" action="{{ route('emr.patient.search') }}" method="GET">
                 <div class="input-group input-group-merge">
                     <input type="text" name="query" class="form-control bg-light-green border-light-green w-250px" placeholder="Search..." aria-label="Search for any term" value="{{ request('query') }}">
                     <span class="input-group-text bg-light-green border-light-green p-0">
@@ -19,9 +18,6 @@
                     </span>
                 </div>
             </form>
-            <div>
-                <a href="#" class="btn btn-sm btn-primary" data-bs-toggle="modal" data-bs-target="#newPatientModal" id="btnAddEvent">New Patient</a>
-            </div>
         </div>
     </div>
 
@@ -36,7 +32,7 @@
 
                     <!-- Title -->
                     <h2 class="card-header-title h4 text-uppercase">
-                        All Patient
+                        All Patients
                     </h2>
 
                     <!-- Dropdown -->
@@ -88,11 +84,6 @@
                                         Joined
                                     </a>
                                 </th>
-                                <th>
-                                    <a href="javascript: void(0);" class="text-body-secondary list-sort" data-sort="id">
-                                        Status
-                                    </a>
-                                </th>
                                 <th class="w-150px min-w-150px text-center">
                                     Actions
                                 </th>
@@ -127,37 +118,16 @@
                                     <span class="badge bg-light text-dark">
                                         <!-- {{ $user->created_at->diffForHumans() }} --> 
                                         <!-- {{ $user->created_at->diffInDays() }} days ago -->
-                                        <!-- {{ $user->created_at->diffInHours() }} hours ago -->
                                         <!-- {{ $user->created_at->diffInMinutes() }} minutes ago -->
-                                        {{ $user->created_at->format('d M Y') }}
+                                        {{ $user->created_at->format('d M Y') }}                                        <!-- {{ $user->created_at->diffInHours() }} hours ago -->
+
                                     </span>
                                 </td>
-                                <td class="id">
-                                    @if($user->status)
-                                        <span class="badge bg-success">
-                                            Active
-                                        </span>
-                                    @else
-                                        <span class="badge bg-danger">
-                                            Suspended
-                                        </span>
-                                    @endif
-                                </td>
+                                
                                 <td class="text-center">
-                                    <a href="{{ route('admin.patient.view', $user->id) }}" class="btn btn-sm btn-info me-1" title="View">
-                                        <i class="bi bi-eye"></i> View
+                                    <a href="{{ route('admin.patient.view', $user->id) }}#bio-data-tab" class="btn btn-sm btn-info me-1" title="Access patient record">
+                                        <i class="bi bi-eye"></i> Access patient record
                                     </a>
-                                    <form action="{{ route('admin.toggleStatus', $user->id) }}" method="POST" class="d-inline">
-                                        @csrf
-                                        @method('PATCH')
-                                        <button type="submit" class="btn btn-link p-0 m-0 align-baseline toggle-status-icon" title="{{ $user->status ? 'Suspend' : 'Activate' }}">
-                                            @if($user->status)
-                                                <i class="bi bi-pause-circle text-warning fs-3"></i>
-                                            @else
-                                                <i class="bi bi-play-circle text-success fs-3"></i>
-                                            @endif
-                                        </button>
-                                    </form>
                                 </td>
                             </tr>
                             @endforeach

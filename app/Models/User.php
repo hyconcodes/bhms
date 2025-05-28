@@ -19,14 +19,34 @@ class User extends Authenticatable
      * The attributes that are mass assignable.
      *
      * @var array<int, string>
+     * History of Heart Disease: Yes/No (Incomplete)
+
+History of Respiratory Disease: Yes/No (Incomplete)
+
+History of Tuberculosis: Yes/No (Incomplete)
+
+History of Stomach Disorder: Yes/No (Incomplete)
+
+History of Mental Disorder: Yes/No (Incomplete)
+
+History of Gonorrhea: Yes/No (Incomplete)
+
+History of Syphilis: Yes/No (Incomplete)
+
+History of Epilepsy: Yes/No (Incomplete)
+
+History of Sickle Cell Disease: Yes/No (Incomplete)
+
+Previous Operations: Details (Incomplete)
+
+Other Serious Illnesses: Details (Incomplete)
      */
     protected $fillable = [
         'name',
         'email',
         'password',
-        'name',
-        'email',
-        'password',
+        'age',
+        'no_of_children',
         'role_id',
         'avatar',
         'profile_picture',
@@ -41,15 +61,41 @@ class User extends Authenticatable
         'guardian_name',
         'guardian_address',
         'guardian_contact',
-        'blood_group',
         'allergies',
         'medical_conditions',
         'medications',
-        'genotype',
         'religion',
         'nationality',
         'marital_status',
         'disability',
+        'reg_no',
+        'state_of_origin',
+        'state_of_domicile',
+        'faculty',
+        'heart_disease',
+        'respiratory_disease',
+        'tuberculosis',
+        'stomach_disorder',
+        'mental_disorder',
+        'gonorrhea',
+        'syphilis',
+        'epilepsy',
+        'sickle_cell',
+        'previous_operations',
+        'other_illnesses',
+        'vital_signs_bp',
+        'vital_signs_rr',
+        'vital_signs_pr',
+        'chest_xray',
+        'urine_analysis',
+        'other_lab_tests',
+        'eye_test',
+        'ent_test',
+        'reflex_test',
+        'pregnancy_status',
+        'general_fitness',
+        'hb_genotype',
+        'blood_group',
     ];
 
     /**
@@ -75,6 +121,17 @@ class User extends Authenticatable
     public function role()
     {
         return $this->belongsTo(Role::class);
+    }
+
+    /**
+     * Set the reg_no attribute to uppercase.
+     *
+     * @param  string  $value
+     * @return void
+     */
+    public function setRegNoAttribute($value)
+    {
+        $this->attributes['reg_no'] = strtoupper($value);
     }
 
     protected static function booted()

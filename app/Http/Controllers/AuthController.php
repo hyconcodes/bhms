@@ -88,14 +88,14 @@ class AuthController extends Controller
         $roles = Role::whereNotIn('name', ['super admin', 'student'])->get();
         $query = $request->input('query');
         $users = User::whereHas('role', function ($q) {
-                $q->where('name', '!=', 'student');
-            })
+            $q->where('name', '!=', 'student');
+        })
             ->where(function ($q) use ($query) {
                 $q->where('name', 'like', "%{$query}%")
-                  ->orWhere('email', 'like', "%{$query}%")
-                  ->orWhereHas('role', function ($q2) use ($query) {
-                      $q2->where('name', 'like', "%{$query}%");
-                  });
+                    ->orWhere('email', 'like', "%{$query}%")
+                    ->orWhereHas('role', function ($q2) use ($query) {
+                        $q2->where('name', 'like', "%{$query}%");
+                    });
             })
             ->paginate(8);
         return view('admin.create_admin', compact('users', 'query', 'roles'));
@@ -149,7 +149,8 @@ class AuthController extends Controller
         return redirect()->route('admin.profile')->with('success', 'Profile updated successfully');
     }
 
-    public function adminProfileUpdatePassword(Request $request){
+    public function adminProfileUpdatePassword(Request $request)
+    {
         $request->validate([
             'current_password' => 'required|string|min:6',
             'password' => 'required|string|min:8|confirmed',
@@ -189,5 +190,20 @@ class AuthController extends Controller
             return redirect()->route('admin.create')->with('success', 'Role updated to "' . $roleName . '" for user ' . $user->name . '.');
         }
         return redirect()->route('admin.create')->withErrors(['error' => 'Unable to update role.']);
+    }
+
+    public function adminUpdateApiUrl(Request $request)
+    {
+        $request->validate([
+            'api_url' => 'required|url'
+        ]);
+        $settings = \App\Models\Setting::first();
+        if (!$settings) {
+            $settings = new \App\Models\Setting();
+        }
+        $settings->api_url = $request->api_url;
+        $settings->save();
+
+        return redirect()->back()->with('success', 'API URL updated successfully');
     }
 }

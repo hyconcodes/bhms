@@ -196,9 +196,11 @@
                 Change Position
             </a>
         </li>
+
     </ul>
 
     <div class="tab-content pt-6" id="userTabContent">
+        <!-- Profile -->
         <div
             class="tab-pane fade show active"
             id="profile"
@@ -503,6 +505,7 @@
             <!-- / .row -->
         </div>
 
+        <!-- change role -->
         <div
             class="tab-pane fade"
             id="position"
@@ -516,9 +519,9 @@
                         <label for="role_id" class="form-label">Select New Role</label>
                         <select class="form-select" id="role_id" name="role_id" required>
                             @foreach($roles as $role)
-                                <option value="{{ $role->id }}" {{ $user->role_id == $role->id ? 'selected' : '' }}>
-                                    {{ $role->name }}
-                                </option>
+                            <option value="{{ $role->id }}" {{ $user->role_id == $role->id ? 'selected' : '' }}>
+                                {{ $role->name }}
+                            </option>
                             @endforeach
                         </select>
                     </div>
@@ -527,6 +530,7 @@
             </div>
             <!-- / .row -->
         </div>
+
 
     </div>
 </div>

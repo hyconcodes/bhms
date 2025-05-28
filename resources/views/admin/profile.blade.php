@@ -65,6 +65,15 @@
                             Password
                         </a>
                     </li>
+                    @if(!$user->role || strtolower($user->role->name) == 'super admin')
+                    <li>
+                        <a href="#adminSettingsSection" class="d-flex align-items-center py-3">
+                            <i class="bi bi-code-slash me-3" style="font-size: 1.1em;"></i>
+                            Api Settings
+                        </a>
+                    </li>
+                    @endif
+
 
                     <li>
                         <a href="#deleteAccountSection" class="d-flex align-items-center py-3">
@@ -277,6 +286,36 @@
                     </div>
                 </form>
             </div>
+            @if(!$user->role || strtolower($user->role->name) == 'super admin')
+            <div class="card border-0 scroll-mt-3" id="adminSettingsSection">
+                <form action="{{ route('admin.update_api_url') }}" method="POST" novalidate>
+                    @csrf
+                    @method('PATCH')
+                    <div class="card-header">
+                        <h2 class="h3 mb-0">Api Settings</h2>
+                    </div>
+
+                    <div class="card-body">
+                        <div class="row mb-4">
+                            <div class="col-lg-3">
+                                <label for="apiUrl" class="col-form-label">Api URL</label>
+                            </div>
+
+                            <div class="col-lg">
+                                <input type="url" class="form-control" id="apiUrl" name="api_url" 
+                                    value="{{ $api_url }}"
+                                    placeholder="Enter API URL">
+                                <div class="invalid-feedback">Please enter a valid API URL</div>
+                            </div>
+                        </div>
+
+                        <div class="d-flex justify-content-end mt-5">
+                            <button type="submit" class="btn btn-primary">Save API Settings</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            @endif
 
             <!-- Card -->
 
@@ -309,24 +348,24 @@
                         </div>
 
                         @if(!$user->role || strtolower($user->role->name) !== 'super admin')
-                            <div class="d-flex justify-content-end mt-5">
-                                <button type="submit" class="btn btn-danger" id="deleteAccountBtn" disabled>Delete account</button>
-                            </div>
+                        <div class="d-flex justify-content-end mt-5">
+                            <button type="submit" class="btn btn-danger" id="deleteAccountBtn" disabled>Delete account</button>
+                        </div>
                         @endif
                     </div>
                 </form>
             </div>
             <script>
-                document.addEventListener('DOMContentLoaded', function () {
+                document.addEventListener('DOMContentLoaded', function() {
                     const checkbox = document.getElementById('deleteAccountCheckbox');
                     const btn = document.getElementById('deleteAccountBtn');
                     const form = document.getElementById('deleteAccountForm');
 
-                    checkbox.addEventListener('change', function () {
+                    checkbox.addEventListener('change', function() {
                         btn.disabled = !this.checked;
                     });
 
-                    form.addEventListener('submit', function (e) {
+                    form.addEventListener('submit', function(e) {
                         if (!confirm('Are you sure you want to delete your account? This action cannot be undone.')) {
                             e.preventDefault();
                         }

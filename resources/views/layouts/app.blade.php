@@ -149,7 +149,7 @@
             html.removeAttribute("dir");
         }
     </script>
-    <title>{{ config('app.name', 'Laravel') }}</title>
+    <title>@yield('title') | {{ config('app.name', 'Laravel') }}</title>
 
     <!-- Fonts -->
 

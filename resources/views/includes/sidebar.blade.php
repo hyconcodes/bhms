@@ -59,11 +59,11 @@
                     </div>
                 </li>
                 <li class="nav-item dropdown">
-                    <a class="nav-link" href="#emrCollapse" data-bs-toggle="collapse" role="button" aria-expanded="false" aria-controls="emrCollapse">
+                    <a class="nav-link" href="{{route('admin.emr.index')}}" id="emrCollapse">
                         <i class="bi bi-file-earmark-medical nav-link-icon" style="font-size: 18px;"></i>
                         <span>Electronic Medical Records (EMR)</span>
                     </a>
-                    <div class="collapse close" id="emrCollapse">
+                    <!-- <div class="collapse close" id="emrCollapse">
                         <ul class="nav flex-column">
                             <li class="nav-item">
                                 <a href="index-2" class="nav-link ">
@@ -71,7 +71,7 @@
                                 </a>
                             </li>
                         </ul>
-                    </div>
+                    </div> -->
                 </li>
                 <li class="nav-item dropdown">
                     <a class="nav-link" href="#staffCollapse" data-bs-toggle="collapse" role="button" aria-expanded="false" aria-controls="staffCollapse">
