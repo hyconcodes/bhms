@@ -147,7 +147,7 @@
                                         cy="50"
                                         r="{{ $radius }}"
                                         fill="none"
-                                        stroke="green"
+                                        stroke="#00bac7"
                                         stroke-width="10"
                                         stroke-dasharray="{{ $circumference }}"
                                         stroke-dashoffset="{{ $offset }}"

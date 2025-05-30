@@ -1,11 +1,13 @@
 <?php
 
+use App\Charts\MonthlyPatientChart;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\EMRController;
 use App\Http\Controllers\PatientController;
 use App\Models\Role;
 use App\Models\Setting;
 use App\Models\User;
+// use ConsoleTVs\Charts\Commands\ChartsCommand;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -28,7 +30,23 @@ Route::middleware(['guest'])->group(function () {
 // Dashboard
 Route::middleware(['auth'])->group(function () {
     Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
-    Route::get('/dashboard', fn() => view('admin.home'));
+    Route::get('/dashboard', function () {
+        $monthlyData = User::where('role_id', 5)
+            ->selectRaw('COUNT(*) as count, MONTH(created_at) as month')
+            ->whereYear('created_at', now()->year)
+            ->groupBy('month')
+            ->orderBy('month')
+            ->pluck('count', 'month');
+        $chart = new MonthlyPatientChart();
+        $chart->type('line')
+            // ->title('Student Registration Trend')
+            ->labels(['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'])
+            ->dataset('Students', 'line', collect(range(1, 12))->map(fn($month) => $monthlyData[$month] ?? 0)->toArray())
+            ->options(['responsive' => true, 'height' => 300]);
+        $users = User::whereHas('role', fn($query) => $query->where('name', 'student'))
+            ->orderBy('updated_at', 'desc')->paginate(8);
+        return view('admin.home', compact('users', 'chart'));
+    });
     Route::get('/admin/create', function () {
         $roles = Role::whereNotIn('name', ['super admin', 'student'])->get();
         $users = User::whereHas('role', function ($query) {
@@ -348,3 +366,15 @@ Route::patch('/admin/emr/patient/{userId}.updateMedicalHistory', [EMRController:
 Route::patch('/admin/emr/patient/{userId}.updateInvestigationResults', [EMRController::class, 'updateInvestigationResults'])->name('admin.patient.updateInvestigationResults');
 Route::get('/admin/emr/patient/{userId}.downloadPDF', [EMRController::class, 'downloadPDF'])->name('admin.patient.downloadPDF');
 Route::get('/admin/emr/patient/search', [EMRController::class, 'emrSearchPatient'])->name('emr.patient.search');
+
+// STUDENTS
+Route::get('/student', [PatientController::class, 'index']);
+Route::get('/view/calendar', fn() => view('student.calendar'))->name('calendar');
+Route::get('/student/book/appointment/{userId}', [PatientController::class, 'bookAppointment'])->name('student.book.appointment');
+Route::post('/student/store/appointment/{userId}', [PatientController::class, 'storeAppointment'])->name('student.store.appointment');
+Route::get('/student/doctors/search', [PatientController::class, 'searchDoctors'])->name('doctors.search');
+// FOR BOOKING APPOINTMENTS
+Route::get('/admin/appointments', [PatientController::class, 'adminAppointments'])->name('admin.appointments');
+Route::get('/student/appointments', [PatientController::class, 'studentAppointments'])->name('student.appointments');
+Route::get('/student/appointment/{id}/view', [PatientController::class, 'viewAppointment'])->name('appointment.view');
+Route::put('/student/appointment/{id}', [PatientController::class, 'updateAppointment'])->name('appointment.update');

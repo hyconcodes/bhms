@@ -32,7 +32,7 @@
 
                     <!-- Title -->
                     <h2 class="card-header-title h4 text-uppercase">
-                        All Patients
+                        All Students
                     </h2>
 
                     <!-- Dropdown -->

@@ -20,17 +20,32 @@ class AuthController extends Controller
             'email' => 'required|email',
             'password' => 'required|min:6',
         ]);
+
         $credentials = $request->only('email', 'password');
         $user = User::where('email', $request->email)->first();
+
+        // Check if user exists and is suspended
         if ($user && !$user->status) {
             return back()->withErrors([
-                'email' => 'Your account is suspended. Please contact the admin.',
+                'email' => 'Your account is suspended. Please contact the administrator.',
             ]);
         }
+
+        // Attempt authentication
         if (auth()->attempt($credentials)) {
-            // $user = auth()->user();
-            return redirect()->intended('dashboard')->with('success', 'Welcome, ' . $user->name . '!');
+            $user = auth()->user();
+            
+            // Check user role and redirect accordingly
+            if ($user->role->name === 'Student') {
+                return redirect()->intended('student')
+                    ->with('success', 'Welcome, ' . $user->name . '!');
+            }
+            
+            return redirect()->intended('dashboard')
+                ->with('success', 'Welcome, ' . $user->name . '!');
         }
+
+        // Authentication failed
         return back()->withErrors([
             'email' => 'The provided credentials do not match our records.',
         ]);

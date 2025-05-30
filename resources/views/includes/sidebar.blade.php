@@ -37,6 +37,7 @@
 
             <!-- Navigation -->
             <ul class="navbar-nav mb-lg-7">
+                @if(Auth::user()->role->name != 'Student')
                 <li class="nav-item">
                     <a class="nav-link" href="{{url('/dashboard')}}">
                         <i class="bi bi-grid nav-link-icon" style="font-size: 18px;"></i>
@@ -63,15 +64,6 @@
                         <i class="bi bi-file-earmark-medical nav-link-icon" style="font-size: 18px;"></i>
                         <span>Electronic Medical Records (EMR)</span>
                     </a>
-                    <!-- <div class="collapse close" id="emrCollapse">
-                        <ul class="nav flex-column">
-                            <li class="nav-item">
-                                <a href="index-2" class="nav-link ">
-                                    <span>Default</span>
-                                </a>
-                            </li>
-                        </ul>
-                    </div> -->
                 </li>
                 <li class="nav-item dropdown">
                     <a class="nav-link" href="#staffCollapse" data-bs-toggle="collapse" role="button" aria-expanded="false" aria-controls="staffCollapse">
@@ -88,6 +80,17 @@
                         </ul>
                     </div>
                 </li>
+                @endif
+                <!-- Admins ends -->
+                <!-- Student start -->
+                @if(Auth::user()->role->name === 'Student')
+                <li class="nav-item">
+                    <a class="nav-link" href="{{url('/student')}}">
+                        <i class="bi bi-grid nav-link-icon" style="font-size: 18px;"></i>
+                        <span>Home</span>
+                    </a>
+                </li>
+                @endif
                 <li class="nav-item dropdown">
                     <a class="nav-link" href="#appointmentCollapse" data-bs-toggle="collapse" role="button" aria-expanded="false" aria-controls="appointmentCollapse">
                         <i class="bi bi-calendar-check nav-link-icon" style="font-size: 18px;"></i>
@@ -95,9 +98,26 @@
                     </a>
                     <div class="collapse close" id="appointmentCollapse">
                         <ul class="nav flex-column">
+                            <!-- For Admins -->
+                            @if(Auth::user()->role->name != 'Student')
                             <li class="nav-item">
-                                <a href="index-2" class="nav-link ">
-                                    <span>Default</span>
+                                <a href="{{ route('admin.appointments') }}" class="nav-link ">
+                                    <span>My Appointments</span>
+                                </a>
+                            </li>
+                            @endif
+                            <!-- For Students -->
+                            @if(Auth::user()->role->name === 'Student')
+                            <li class="nav-item">
+                                <a href="{{ route('student.appointments') }}" class="nav-link ">
+                                    <span>Appointments</span>
+                                </a>
+                            </li>
+                            @endif
+                            <!-- For all roles -->
+                            <li class="nav-item">
+                                <a href="{{ route('calendar') }}" class="nav-link ">
+                                    <span>Calendar</span>
                                 </a>
                             </li>
                         </ul>
