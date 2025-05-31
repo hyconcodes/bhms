@@ -1,5 +1,5 @@
 @extends('layouts.app')
-@section('title', 'Student Dashboard')
+@section('title', 'My Appointments')
 @section('content')
 <div class="container-fluid">
     @include('includes.error_or_success_message')
@@ -55,7 +55,7 @@
                                             };
                                         @endphp
                                         <span class="badge bg-{{ $statusColor }}">
-                                            {{ $appointment->status }}
+                                            {{ ucwords($appointment->status) }}
                                         </span>
                                     </td>
                                     <td>

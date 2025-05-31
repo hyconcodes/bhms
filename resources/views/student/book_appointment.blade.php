@@ -1,5 +1,5 @@
 @extends('layouts.app')
-@section('title', 'Student Dashboard')
+@section('title', 'Book Appointment')
 @section('content')
 <div class="container-fluid">
     @include('includes.error_or_success_message')

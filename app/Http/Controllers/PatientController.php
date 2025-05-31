@@ -72,11 +72,7 @@ class PatientController extends Controller
         $appointments = Appointment::where('user_id', auth()->user()->id)
             ->orderBy('updated_at', 'desc')
             ->get();
-        // $approveAppointments = Appointment::where('user_id', Auth::id())
-        //     ->whereDate('updated_at', today())
-        //     ->where('status', 'approved')
-        //     ->get();
-        return view('student.home', compact('users', 'appointments', 'approveAppointments'));
+        return view('student.home', compact('users', 'appointments'));
     }
 
     // NOT USING
@@ -137,12 +133,6 @@ class PatientController extends Controller
         return redirect('student')->with('success', 'Appointment request submitted successfully. You will be notified of the approved date and time.');
     }
 
-    // public function adminAppointments()
-    // {
-    //     $appointments = Appointment::where('doctor_id', auth()->user()->id)->get();
-    //     return view('admin.appointments', compact('appointments'));
-    // }
-
     public function studentAppointments()
     {
         $appointments = Appointment::where('user_id', auth()->user()->id)
@@ -163,4 +153,12 @@ class PatientController extends Controller
         $appointment->update($request->all());
         return redirect()->route('student.appointments')->with('success', 'Appointment updated successfully.');
     }
+
+    public function destroyAppointment($id)
+    {
+        $appointment = Appointment::findOrFail($id);
+        $appointment->delete();
+        return redirect()->route('student.appointments')->with('success', 'Appointment deleted.');
+    }
+    
 }

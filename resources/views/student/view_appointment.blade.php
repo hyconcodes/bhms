@@ -1,5 +1,5 @@
 @extends('layouts.app')
-@section('title', 'Student Dashboard')
+@section('title', 'View Appointment')
 @section('content')
 <div class="container-fluid">
     @include('includes.error_or_success_message')
@@ -12,7 +12,7 @@
                 </div>
                 <div class="card-body">
                     @if(strtolower($appointment->status) === 'pending')
-                        <form action="{{ route('appointment.update', $appointment->id) }}" method="POST">
+                        <form id="updateForm" action="{{ route('appointment.update', $appointment->id) }}" method="POST">
                             @csrf
                             @method('PUT')
                             <div class="mb-3">
@@ -34,8 +34,28 @@
                                 <label class="form-label">Notes</label>
                                 <textarea class="form-control" name="notes" rows="3">{{ $appointment->notes }}</textarea>
                             </div>
-                            <button type="submit" class="btn btn-primary">Update Appointment</button>
+                            <div class="d-flex justify-content-between align-items-center">
+                                <button type="button" onclick="submitUpdateForm()" class="btn btn-primary">Update Appointment</button>
+                                <button type="button" onclick="deleteAppointment()" class="btn btn-danger">Delete</button>
+                            </div>
                         </form>
+
+                        <form id="deleteForm" action="{{ route('appointment.destroy', $appointment->id) }}" method="POST" style="display: none;">
+                            @csrf
+                            @method('DELETE')
+                        </form>
+
+                        <script>
+                            function submitUpdateForm() {
+                                document.getElementById('updateForm').submit();
+                            }
+
+                            function deleteAppointment() {
+                                if (confirm('Are you sure you want to delete this appointment?')) {
+                                    document.getElementById('deleteForm').submit();
+                                }
+                            }
+                        </script>
                     @else
                         <div class="alert alert-info">
                             This appointment cannot be edited as it is no longer pending.
@@ -91,10 +111,10 @@
                         <dd class="col-sm-8">{{ $appointment->appointment_urgency }}</dd>
 
                         <dt class="col-sm-4">Date</dt>
-                        <dd class="col-sm-8">{{ $appointment->appointment_date ?? 'Date not assigned' }}</dd>
+                        <dd class="col-sm-8">{!! $appointment->appointment_date ? date('F j, Y', strtotime($appointment->appointment_date)) : '<i class="text-muted">Date not assigned</i>' !!}</dd>
 
                         <dt class="col-sm-4">Time</dt>
-                        <dd class="col-sm-8">{{ $appointment->appointment_time ?? 'Time not assigned' }}</dd>
+                        <dd class="col-sm-8">{!! $appointment->appointment_time ? date('g:i A', strtotime($appointment->appointment_time)) : '<i class="text-muted">Time not assigned</i>' !!}</dd>
 
                         <dt class="col-sm-4">Reason</dt>
                         <dd class="col-sm-8">{{ $appointment->reason }}</dd>
@@ -113,7 +133,7 @@
                                     default => 'secondary'
                                 };
                             @endphp
-                            <span class="badge bg-{{ $statusColor }}">{{ $appointment->status }}</span>
+                            <span class="badge bg-{{ $statusColor }}">{{ ucwords($appointment->status) }}</span>
                         </dd>
 
                         <dt class="col-sm-4">Doctor's Comment</dt>

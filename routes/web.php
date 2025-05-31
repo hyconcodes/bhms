@@ -1,6 +1,7 @@
 <?php
 
 use App\Charts\MonthlyPatientChart;
+use App\Http\Controllers\AdminController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\EMRController;
 use App\Http\Controllers\PatientController;
@@ -373,8 +374,10 @@ Route::get('/view/calendar', fn() => view('student.calendar'))->name('calendar')
 Route::get('/student/book/appointment/{userId}', [PatientController::class, 'bookAppointment'])->name('student.book.appointment');
 Route::post('/student/store/appointment/{userId}', [PatientController::class, 'storeAppointment'])->name('student.store.appointment');
 Route::get('/student/doctors/search', [PatientController::class, 'searchDoctors'])->name('doctors.search');
-// FOR BOOKING APPOINTMENTS
-Route::get('/admin/appointments', [PatientController::class, 'adminAppointments'])->name('admin.appointments');
+// FOR BOOKING APPOINTMENTS FOR STUDENTS
 Route::get('/student/appointments', [PatientController::class, 'studentAppointments'])->name('student.appointments');
 Route::get('/student/appointment/{id}/view', [PatientController::class, 'viewAppointment'])->name('appointment.view');
 Route::put('/student/appointment/{id}', [PatientController::class, 'updateAppointment'])->name('appointment.update');
+Route::delete('/student/appointment/{id}', [PatientController::class, 'destroyAppointment'])->name('appointment.destroy');
+// FOR BOOKING APPOINTMENTS FOR ADMIN
+Route::get('/admin/appointments', [AdminController::class, 'adminAppointments'])->name('admin.appointments');

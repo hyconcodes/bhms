@@ -1,5 +1,5 @@
 @extends('layouts.app')
-@section('title', 'Student Dashboard')
+@section('title', 'Calendar')
 @section('content')
 <div class="container-fluid">
     @include('includes.error_or_success_message')
@@ -30,19 +30,29 @@
                         </thead>
                         <tbody>
                             @php
+                                use Carbon\Carbon;
+
+                                // Start of the month and end of the month
                                 $firstDayOfMonth = now()->startOfMonth();
                                 $lastDayOfMonth = now()->endOfMonth();
-                                $currentDay = $firstDayOfMonth->copy()->startOfWeek();
-                                $today = now()->day;
+
+                                // Start of the calendar grid (first Sunday before or equal to the first day of the month)
+                                $startOfCalendar = $firstDayOfMonth->copy()->startOfWeek(Carbon::SUNDAY);
+
+                                // End of the calendar grid (last Saturday after or equal to the last day of the month)
+                                $endOfCalendar = $lastDayOfMonth->copy()->endOfWeek(Carbon::SATURDAY);
+
+                                // Today's date
+                                $today = now();
                             @endphp
 
-                            @while($currentDay <= $lastDayOfMonth)
+                            @while($startOfCalendar <= $endOfCalendar)
                                 <tr>
                                     @for($i = 0; $i < 7; $i++)
-                                        <td class="{{ $currentDay->format('m') != now()->format('m') ? 'text-muted' : '' }} 
-                                                 {{ $currentDay->day == $today && $currentDay->format('m') == now()->format('m') ? 'bg-primary text-white' : '' }}">
-                                            {{ $currentDay->day }}
-                                            @php $currentDay->addDay(); @endphp
+                                        <td class="{{ $startOfCalendar->month != now()->month ? 'text-muted' : '' }} 
+                                                 {{ $startOfCalendar->isSameDay($today) ? 'bg-primary text-white' : '' }}">
+                                            {{ $startOfCalendar->day }}
+                                            @php $startOfCalendar->addDay(); @endphp
                                         </td>
                                     @endfor
                                 </tr>
