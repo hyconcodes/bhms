@@ -59,7 +59,7 @@ Route::middleware(['auth'])->group(function () {
         ];
         $chart1 = new LaravelChart($chart_options);
         return view('admin.home', compact('users', 'all_student_reg_no', 'api_url', 'chart1'));
-    });
+    })->middleware('admins');
 
     Route::get('/admin/create', function () {
         $roles = Role::whereNotIn('name', ['super admin', 'student'])->get();
@@ -70,8 +70,8 @@ Route::middleware(['auth'])->group(function () {
             'roles' => $roles,
             'users' => $users,
         ]);
-    })->name('admin.create');
-    Route::post('/admin/store', [AuthController::class, 'adminStore'])->name('admin.store');
+    })->name('admin.create')->middleware('superadmin');
+    Route::post('/admin/store', [AuthController::class, 'adminStore'])->name('admin.store')->middleware('superadmin');
     //FOR SUSPENDING AND ACTIVATING ACCOUNT
     Route::patch('/admin/users/{userId}/toggle-status', function ($userId) {
         $user = User::findOrFail($userId);
@@ -79,8 +79,8 @@ Route::middleware(['auth'])->group(function () {
         $user->save();
         $msg = $user->status ? 'Account activated.' : 'Account suspended.';
         return redirect()->back()->with('message', $msg);
-    })->name('admin.toggleStatus');
-    Route::get('admin/users/search', [AuthController::class, 'searchAdmin'])->name('admin.search');
+    })->name('admin.toggleStatus')->middleware('superadmin');
+    Route::get('admin/users/search', [AuthController::class, 'searchAdmin'])->name('admin.search')->middleware('superadmin');
     Route::get('admin/users/{userId}/view', function ($userId) {
         $user = User::with(['role', 'appointments'])->findOrFail($userId);
         $roles = Role::where('name', '!=', 'super admin')->get();
@@ -88,8 +88,10 @@ Route::middleware(['auth'])->group(function () {
             'user' => $user,
             'roles' => $roles,
         ]);
-    })->name('admin.view');
-    Route::get('/admin/profile', function () {
+    })->name('admin.view')->middleware('superadmin');
+
+    // Route for all role start
+    Route::get('/profile', function () {
         $user = auth()->user();
         $api_url = Setting::first()?->api_url;
         $countries = [
@@ -343,60 +345,76 @@ Route::middleware(['auth'])->group(function () {
         ];
         return view('admin.profile', compact('user', 'countries', 'api_url'));
     })->name('admin.profile');
-    Route::post('/admin/profile', [AuthController::class, 'adminProfileUploadPicture'])->name('admin.profile.upload_picture');
-    Route::put('/admin/profile/info', [AuthController::class, 'adminProfileInfo'])->name('admin.profile.update');
-    Route::put('/admin/profile/update/password', [AuthController::class, 'adminProfileUpdatePassword'])->name('admin.profile.update_password');
-    Route::delete('/admin/account/delete', [AuthController::class, 'adminDeleteAccount'])->name('admin.profile.delete_account');
-    Route::patch('/admin/profile/{userId}/update/role', [AuthController::class, 'adminProfileUpdateRole'])->name('admin.users.updateRole');
-    Route::patch('/admin/update/api', [AuthController::class, 'adminUpdateApiUrl'])->name('admin.update_api_url');
-    // FOR CREATING PATIENTS by admin
-    Route::get('/admin/create/patient', function () {
-        $api_url = Setting::first()?->api_url;
-        // dd($api_url);
-        $roles = Role::where('name', 'student')->get();
-        $users = User::whereHas('role', fn($query) => $query->where('name', 'student'))
-            ->orderBy('updated_at', 'desc')->paginate(8);
-        return view('admin.create_patient', [
-            'api_url' => $api_url,
-            'roles' => $roles,
-            'users' => $users,
-        ]);
-    })->name('admin.create.patient');
-    Route::post('/patient/store', [PatientController::class, 'patientStore'])->name('patient.store');
-    Route::get('/admin/patient/search', [PatientController::class, 'searchPatient'])->name('patient.search');
-    Route::get('/admin/patient/{userId}/view', function ($userId) {
-        $user = User::with(['role', 'patientAppointments'])->findOrFail($userId);
-        $roles = Role::where('name', '!=', 'Super Admin')->get();
-        return view('admin.view_patient', [
-            'user' => $user,
-            'roles' => $roles,
-        ]);
-    })->name('admin.patient.view');
-    // Yo
-    Route::delete('/admin/patient/{userId}/delete', [PatientController::class, 'deletePatient'])->name('admin.patient.delete');
-    Route::delete('/admin/staff/{userId}/delete', [AdminController::class, 'deletePatient'])->name('admin.staff.delete');
+    Route::post('/profile', [AuthController::class, 'adminProfileUploadPicture'])->name('admin.profile.upload_picture');
+    Route::put('/profile/info', [AuthController::class, 'adminProfileInfo'])->name('admin.profile.update');
+    Route::put('/profile/update/password', [AuthController::class, 'adminProfileUpdatePassword'])->name('admin.profile.update_password');
+    Route::delete('/account/delete', [AuthController::class, 'adminDeleteAccount'])->name('admin.profile.delete_account');
+    Route::get('/view/calendar', fn() => view('student.calendar'))->name('calendar');
+    // Route for all role end
+
+    Route::middleware(['superadmin'])->group(function () {
+        Route::patch('/admin/profile/{userId}/update/role', [AuthController::class, 'adminProfileUpdateRole'])->name('admin.users.updateRole');
+        Route::patch('/admin/update/api', [AuthController::class, 'adminUpdateApiUrl'])->name('admin.update_api_url');
+    });
+    // FOR CREATING PATIENTS by admins
+    Route::middleware(['admins'])->group(function () {
+        Route::get('/admin/create/patient', function () {
+            $api_url = Setting::first()?->api_url;
+            $roles = Role::where('name', 'student')->get();
+            $users = User::whereHas('role', fn($query) => $query->where('name', 'student'))
+                ->orderBy('updated_at', 'desc')->paginate(8);
+            return view('admin.create_patient', [
+                'api_url' => $api_url,
+                'roles' => $roles,
+                'users' => $users,
+            ]);
+        })->name('admin.create.patient');
+        Route::post('/patient/store', [PatientController::class, 'patientStore'])->name('patient.store');
+        Route::get('/admin/patient/search', [PatientController::class, 'searchPatient'])->name('patient.search');
+        Route::get('/admin/patient/{userId}/view', function ($userId) {
+            $user = User::with(['role', 'patientAppointments'])->findOrFail($userId);
+            $roles = Role::where('name', '!=', 'Super Admin')->get();
+            return view('admin.view_patient', [
+                'user' => $user,
+                'roles' => $roles,
+            ]);
+        })->name('admin.patient.view');
+    });
+
+    // Super Admin can delete staff and patient
+    Route::middleware(['superadmin'])->group(function () {
+        Route::delete('/admin/staff/{userId}/delete', [AdminController::class, 'deletePatient'])->name('admin.staff.delete');
+        Route::delete('/admin/patient/{userId}/delete', [PatientController::class, 'deletePatient'])->name('admin.patient.delete');
+    });
+
     // Electronic Medical Records (EMR)
-    Route::get('/admin/emr', [EMRController::class, 'index'])->name('admin.emr.index');
-    Route::patch('/admin/emr/patient/{userId}.updateBioData', [EMRController::class, 'updateBioData'])->name('admin.patient.updateBioData');
-    Route::patch('/admin/emr/patient/{userId}.updateMedicalHistory', [EMRController::class, 'updateMedicalHistory'])->name('admin.patient.updateMedicalHistory');
-    Route::patch('/admin/emr/patient/{userId}.updateInvestigationResults', [EMRController::class, 'updateInvestigationResults'])->name('admin.patient.updateInvestigationResults');
-    Route::get('/admin/emr/patient/{userId}.downloadPDF', [EMRController::class, 'downloadPDF'])->name('admin.patient.downloadPDF');
-    Route::get('/admin/emr/patient/search', [EMRController::class, 'emrSearchPatient'])->name('emr.patient.search');
+    Route::middleware(['admins'])->group(function () {
+        Route::get('/admin/emr', [EMRController::class, 'index'])->name('admin.emr.index');
+        Route::patch('/admin/emr/patient/{userId}.updateBioData', [EMRController::class, 'updateBioData'])->name('admin.patient.updateBioData');
+        Route::patch('/admin/emr/patient/{userId}.updateMedicalHistory', [EMRController::class, 'updateMedicalHistory'])->name('admin.patient.updateMedicalHistory');
+        Route::patch('/admin/emr/patient/{userId}.updateInvestigationResults', [EMRController::class, 'updateInvestigationResults'])->name('admin.patient.updateInvestigationResults');
+        Route::get('/admin/emr/patient/{userId}.downloadPDF', [EMRController::class, 'downloadPDF'])->name('admin.patient.downloadPDF');
+        Route::get('/admin/emr/patient/search', [EMRController::class, 'emrSearchPatient'])->name('emr.patient.search');
+    });
 
     // STUDENTS
-    Route::get('/student', [PatientController::class, 'index']);
-    Route::get('/view/calendar', fn() => view('student.calendar'))->name('calendar');
-    Route::get('/student/book/appointment/{userId}', [PatientController::class, 'bookAppointment'])->name('student.book.appointment');
-    Route::post('/student/store/appointment/{userId}', [PatientController::class, 'storeAppointment'])->name('student.store.appointment');
-    Route::get('/student/doctors/search', [PatientController::class, 'searchDoctors'])->name('doctors.search');
-    // FOR BOOKING APPOINTMENTS FOR STUDENTS
-    Route::get('/student/appointments', [PatientController::class, 'studentAppointments'])->name('student.appointments');
-    Route::get('/student/appointment/{id}/view', [PatientController::class, 'viewAppointment'])->name('appointment.view');
-    Route::put('/student/appointment/{id}', [PatientController::class, 'updateAppointment'])->name('appointment.update');
-    Route::delete('/student/appointment/{id}', [PatientController::class, 'destroyAppointment'])->name('appointment.destroy');
+    Route::middleware(['student'])->group(function () {
+        Route::get('/student', [PatientController::class, 'index']);
+        Route::get('/student/book/appointment/{userId}', [PatientController::class, 'bookAppointment'])->name('student.book.appointment');
+        Route::post('/student/store/appointment/{userId}', [PatientController::class, 'storeAppointment'])->name('student.store.appointment');
+        Route::get('/student/doctors/search', [PatientController::class, 'searchDoctors'])->name('doctors.search');
+        // FOR BOOKING APPOINTMENTS FOR STUDENTS
+        Route::get('/student/appointments', [PatientController::class, 'studentAppointments'])->name('student.appointments');
+        Route::get('/student/appointment/{id}/view', [PatientController::class, 'viewAppointment'])->name('appointment.view');
+        Route::put('/student/appointment/{id}', [PatientController::class, 'updateAppointment'])->name('appointment.update');
+        Route::delete('/student/appointment/{id}', [PatientController::class, 'destroyAppointment'])->name('appointment.destroy');
+    });
+
     // FOR BOOKING APPOINTMENTS FOR ADMIN
-    Route::get('/admin/appointments', [AdminController::class, 'adminAppointments'])->name('admin.appointments');
-    Route::put('/admin/appointments/{id}/cancel', [AdminController::class, 'adminCancelAppointments'])->name('appointment.cancel');
-    Route::get('/admin/appointment/{id}/view', [AdminController::class, 'viewAppointment'])->name('admin.appointment.view');
-    Route::put('/admin/appointment/{id}/update', [AdminController::class, 'updateAppointment'])->name('admin.appointment.update');
+    Route::middleware(['admins'])->group(function () {
+        Route::get('/admin/appointments', [AdminController::class, 'adminAppointments'])->name('admin.appointments');
+        Route::put('/admin/appointments/{id}/cancel', [AdminController::class, 'adminCancelAppointments'])->name('appointment.cancel');
+        Route::get('/admin/appointment/{id}/view', [AdminController::class, 'viewAppointment'])->name('admin.appointment.view');
+        Route::put('/admin/appointment/{id}/update', [AdminController::class, 'updateAppointment'])->name('admin.appointment.update');
+    });
 });

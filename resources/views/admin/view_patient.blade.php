@@ -206,6 +206,7 @@
                 Profile
             </a>
         </li>
+        @if(auth()->user()->role->name === 'Super Admin')
         <li class="nav-item" role="presentation">
             <a
                 href="javascript: void(0);"
@@ -219,6 +220,7 @@
                 Change Role
             </a>
         </li>
+        @endif
         <li class="nav-item" role="presentation">
             <a
                 href="javascript: void(0);"
@@ -432,6 +434,7 @@
             <!-- / .row -->
         </div>
 
+        @if(auth()->user()->role->name === 'Super Admin')
         <div
             class="tab-pane fade"
             id="position"
@@ -456,6 +459,7 @@
             </div>
             <!-- / .row -->
         </div>
+        @endif
 
         <!-- bio-data -->
         <div
