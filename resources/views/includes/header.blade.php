@@ -2,10 +2,17 @@
 <header class="container-fluid d-flex py-6 mb-4">
     @php
     use App\Models\Appointment;
+    
+    // For students
     $approveAppointments = Appointment::where('user_id', Auth::id())
-    ->whereDate('updated_at', today())
-    ->where('status', 'approved')
-    ->get();
+        ->whereDate('updated_at', today())
+        ->where('status', 'approved')
+        ->get();
+        
+    // For admins
+    $pendingAppointments = Appointment::where('doctor_id', Auth::id())
+        ->where('status', 'pending')
+        ->get();
     @endphp
 
     <!-- Top buttons -->
@@ -72,6 +79,16 @@
                 {{ App\Models\Appointment::where('user_id', Auth::id())->whereDate('created_at', today())->where('status', 'approved')->count() }}<span class="visually-hidden">approved appointments today</span>
             </span>
         </a>
+        @else
+        <div class="vr bg-gray-700 mx-2 mx-lg-3"></div>
+
+        <a class="d-flex align-items-center justify-content-center bg-white rounded-circle shadow-sm mx-1 mx-lg-2 w-40px h-40px position-relative link-secondary" data-bs-toggle="offcanvas" href="#offcanvasAdminNotifications" role="button" aria-controls="offcanvasAdminNotifications">
+            <i class="bi bi-bell fs-5"></i>
+            <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill text-bg-danger">
+                {{ App\Models\Appointment::where('doctor_id', Auth::id())->where('status', 'pending')->count() }}<span class="visually-hidden">approved appointments today</span>
+            </span>
+        </a>
+
         @endif
 
         <!-- Notifications offcanvas FOR STUDENTS -->
@@ -87,6 +104,7 @@
 
             <div class="offcanvas-body p-0">
                 <div class="list-group list-group-flush">
+                    @if(count($approveAppointments) > 0)
                     @foreach($approveAppointments as $appointment)
                     <a href="{{ route('appointment.view', $appointment->id) }}" class="list-group-item list-group-item-action">
                         <div class="d-flex">
@@ -108,6 +126,56 @@
                         </div>
                     </a>
                     @endforeach
+                    @else
+                    <div class="text-center py-4">
+                        <i class="bi bi-bell-slash fs-1 text-muted"></i>
+                        <p class="mt-3 text-muted">No new notifications</p>
+                    </div>
+                    @endif
+                </div>
+            </div>
+        </div>
+        <!-- Notifications offcanvas FOR Admins -->
+        <div class="offcanvas offcanvas-end" tabindex="-1" id="offcanvasAdminNotifications" aria-labelledby="offcanvasAdminNotificationsLabel">
+            <div class="offcanvas-header px-5">
+                <h3 class="offcanvas-title" id="offcanvasAdminNotificationsLabel">Pending Appointments</h3>
+
+                <div class="d-flex align-items-start ms-auto">
+                    <!-- Button -->
+                    <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+                </div>
+            </div>
+
+            <div class="offcanvas-body p-0">
+                <div class="list-group list-group-flush">
+                    @if(count($pendingAppointments) > 0)
+                    @foreach($pendingAppointments as $pendingAppointment)
+                    <a href="{{ route('admin.appointment.view', $pendingAppointment->id) }}" class="list-group-item list-group-item-action">
+                        <div class="d-flex">
+                            <div class="avatar avatar-circle avatar-xs me-2">
+                                <img src="{{ $pendingAppointment->user->profile_picture ? asset('storage/' . $pendingAppointment->user->profile_picture) : $pendingAppointment->user->avatar }}" alt="..." class="avatar-img" width="30" height="30">
+                            </div>
+
+                            <div class="d-flex flex-column flex-grow-1">
+                                <div class="d-flex w-100 justify-content-between">
+                                    <h5 class="mb-1">{{ $pendingAppointment->user->name }}</h5>
+                                    <small class="text-body-secondary">{{ $pendingAppointment->created_at->diffForHumans() }}</small>
+                                </div>
+
+                                <div class="d-flex flex-column">
+                                    <p class="mb-1">New Appointment Request</p>
+                                    <small class="text-secondary">A student has requested an appointment. Please review and set a schedule.</small>
+                                </div>
+                            </div>
+                        </div>
+                    </a>
+                    @endforeach
+                    @else
+                    <div class="text-center py-4">
+                        <i class="bi bi-bell-slash fs-1 text-muted"></i>
+                        <p class="mt-3 text-muted">No pending appointments</p>
+                    </div>
+                    @endif
                 </div>
             </div>
         </div>

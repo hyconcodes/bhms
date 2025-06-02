@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Mail\DoctorAppointmentNotification;
+use App\Models\Setting;
 use App\Mail\WelcomeNewPatient;
 use App\Models\Appointment;
 use App\Models\Role;
@@ -46,6 +48,7 @@ class PatientController extends Controller
 
     public function searchPatient(Request $request)
     {
+        $api_url = Setting::first()?->api_url;
         $roles = Role::where('name', 'student')->get();
         $query = $request->input('query');
         $users = User::whereHas('role', function ($q) {
@@ -61,7 +64,7 @@ class PatientController extends Controller
                     });
             })
             ->paginate(8);
-        return view('admin.create_patient', compact('users', 'query', 'roles'));
+        return view('admin.create_patient', compact('users', 'query', 'roles', 'api_url'));
     }
 
     public function index()
@@ -130,6 +133,12 @@ class PatientController extends Controller
         $appointment->reason = $request->reason;
         $appointment->notes = $request->notes;
         $appointment->save();
+
+        // Send email notification to the doctor
+        $doctor = User::findOrFail($userId);
+        if ($doctor && $doctor->email) {
+            Mail::to($doctor->email)->send(new DoctorAppointmentNotification($appointment));
+        }
         return redirect('student')->with('success', 'Appointment request submitted successfully. You will be notified of the approved date and time.');
     }
 
@@ -160,5 +169,11 @@ class PatientController extends Controller
         $appointment->delete();
         return redirect()->route('student.appointments')->with('success', 'Appointment deleted.');
     }
-    
+
+    public function deletePatient($userId)
+    {
+        $user = User::findOrFail($userId);
+        $user->delete();
+        return redirect()->route('admin.create.patient')->with('success', 'Patient deleted.');
+    }
 }

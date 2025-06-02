@@ -1,5 +1,8 @@
 @extends('layouts.app')
 @section('title', 'Dashboard')
+@php
+use App\Models\User;
+@endphp
 @section('content')
 <div class="container-fluid">
     @include('includes.error_or_success_message')
@@ -23,23 +26,23 @@
                                         <!-- Title -->
                                         <h5 class="d-flex align-items-center text-uppercase text-body-secondary fw-semibold mb-2">
                                             <span class="legend-circle-sm bg-success"></span>
-                                            Active Appointmment
+                                            All Students
                                         </h5>
 
                                         <!-- Subtitle -->
                                         <h2 class="mb-0">
-                                            3,240
+                                            {{ $users->total() }}
                                         </h2>
 
                                         <!-- Comment -->
                                         <p class="fs-6 text-body-secondary mb-0">
-                                            <!-- No additional income -->
+                                            <!-- Total registered students -->
                                         </p>
                                     </div>
 
                                     <span class="text-primary">
-                                        <!-- Bootstrap person icon for patient -->
-                                        <i class="bi bi-calendar-check" style="font-size: 2rem;"></i>
+                                        <!-- Bootstrap person icon for students -->
+                                        <i class="bi bi-people" style="font-size: 2rem;"></i>
                                     </span>
                                 </div>
                             </div> <!-- / .row -->
@@ -57,33 +60,23 @@
                                     <div>
                                         <!-- Title -->
                                         <h5 class="d-flex align-items-center text-uppercase text-body-secondary fw-semibold mb-2">
-                                            <span class="legend-circle-sm bg-danger"></span>
-                                            Patient
+                                            <span class="legend-circle-sm bg-success"></span>
+                                            All Staffs
                                         </h5>
 
                                         <!-- Subtitle -->
                                         <h2 class="mb-0">
-                                            $1,500
+                                            {{ User::whereHas('role', fn($query) => $query->whereNotIn('name', ['student', 'super admin']))->count() }}
                                         </h2>
 
                                         <!-- Comment -->
                                         <p class="fs-6 text-body-secondary mb-0 text-truncate">
-                                            + $6.50 bank charges fee
+                                            Total registered staffs
                                         </p>
                                     </div>
 
                                     <span class="text-primary">
-                                        <svg viewBox="0 0 24 24" height="32" width="32" xmlns="http://www.w3.org/2000/svg">
-                                            <path d="M18.75,14.25H16.717a1.342,1.342,0,0,0-.5,2.587l2.064.826a1.342,1.342,0,0,1-.5,2.587H15.75" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" />
-                                            <path d="M17.25 14.25L17.25 13.5" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" />
-                                            <path d="M17.25 21L17.25 20.25" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" />
-                                            <path d="M11.250 17.250 A6.000 6.000 0 1 0 23.250 17.250 A6.000 6.000 0 1 0 11.250 17.250 Z" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" />
-                                            <path d="M3.75 14.25L8.25 14.25" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" />
-                                            <path d="M8.25 14.25L8.25 6.75" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" />
-                                            <path d="M11.25 9.75L11.25 8.25" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" />
-                                            <path d="M5.25 14.25L5.25 9.75" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" />
-                                            <path d="M7.5,20.25H2.25a1.43,1.43,0,0,1-1.5-1.415V2.335A1.575,1.575,0,0,1,2.25.75H12.879a1.5,1.5,0,0,1,1.06.439l2.872,2.872a1.5,1.5,0,0,1,.439,1.06V7.5" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" />
-                                        </svg>
+                                        <i class="bi bi-person-badge" style="font-size: 2rem;"></i>
                                     </span>
                                 </div>
                             </div> <!-- / .row -->
@@ -103,7 +96,7 @@
                                 Student Registration Trend
                             </h5>
                             <div>
-                                Render chart here
+                                {!! $chart1->renderHtml() !!}
                             </div>
                         </div>
                     </div>
@@ -228,4 +221,47 @@
         </div>
     </div> <!-- / .row -->
 </div> <!-- / .container-fluid -->
+
+<!-- <script>
+    // Function to fetch registration numbers
+    async function fetchRegNumbers() {
+        try {
+            // Ensure data from Blade is properly serialized
+            const regNumbers = @json($all_student_reg_no);
+            const apiUrl = @json($api_url) + '/jamb_no/';
+
+            // Validate the input data
+            if (!Array.isArray(regNumbers) || regNumbers.length === 0) {
+                console.error('No registration numbers provided.');
+                return;
+            }
+
+            // Fetch data for each registration number
+            const fetchPromises = regNumbers.map(async (regNo) => {
+                if (regNo) {
+                    try {
+                        const response = await fetch(`${apiUrl}${regNo}`);
+                        if (!response.ok) {
+                            throw new Error(`Failed to fetch data for reg no: ${regNo}`);
+                        }
+                        const data = await response.json();
+                        console.log(`Data fetched for reg no ${regNo}:`, data);
+                    } catch (err) {
+                        console.error(`Error fetching reg no ${regNo}:`, err);
+                    }
+                }
+            });
+
+            // Wait for all fetches to complete
+            await Promise.all(fetchPromises);
+        } catch (error) {
+            console.error('Error fetching registration numbers:', error);
+        }
+    }
+
+    // Execute when document is ready
+    document.addEventListener('DOMContentLoaded', fetchRegNumbers);
+</script> -->
+{!! $chart1->renderChartJsLibrary() !!}
+{!! $chart1->renderJs() !!}
 @endsection

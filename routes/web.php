@@ -1,15 +1,15 @@
 <?php
 
-use App\Charts\MonthlyPatientChart;
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\EMRController;
 use App\Http\Controllers\PatientController;
+use App\Jobs\UpdateMatricNumbers;
 use App\Models\Role;
 use App\Models\Setting;
 use App\Models\User;
-// use ConsoleTVs\Charts\Commands\ChartsCommand;
 use Illuminate\Support\Facades\Route;
+use LaravelDaily\LaravelCharts\Classes\LaravelChart;
 
 /*
 |--------------------------------------------------------------------------
@@ -31,23 +31,36 @@ Route::middleware(['guest'])->group(function () {
 // Dashboard
 Route::middleware(['auth'])->group(function () {
     Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
+    // Admins Dashboard
     Route::get('/dashboard', function () {
-        $monthlyData = User::where('role_id', 5)
-            ->selectRaw('COUNT(*) as count, MONTH(created_at) as month')
-            ->whereYear('created_at', now()->year)
-            ->groupBy('month')
-            ->orderBy('month')
-            ->pluck('count', 'month');
-        $chart = new MonthlyPatientChart();
-        $chart->type('line')
-            // ->title('Student Registration Trend')
-            ->labels(['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'])
-            ->dataset('Students', 'line', collect(range(1, 12))->map(fn($month) => $monthlyData[$month] ?? 0)->toArray())
-            ->options(['responsive' => true, 'height' => 300]);
+        $api_url = Setting::first()?->api_url;
         $users = User::whereHas('role', fn($query) => $query->where('name', 'student'))
             ->orderBy('updated_at', 'desc')->paginate(8);
-        return view('admin.home', compact('users', 'chart'));
+        $all_student_reg_no = User::whereHas('role', fn($query) => $query->where('name', 'student'))->pluck('reg_no');
+
+        // Dispatch the background job
+        UpdateMatricNumbers::dispatch($all_student_reg_no, $api_url);
+
+        // Chart configuration for monthly student registrations
+        $chart_options = [
+            'chart_title' => 'Students by months',
+            'report_type' => 'group_by_date',
+            'model' => 'App\Models\User',
+            'group_by_field' => 'created_at',
+            'group_by_period' => 'month',
+            'chart_type' => 'bar',
+            'chart_color' => '0, 186, 199',
+            'date_format' => 'F Y',
+            'filter_period' => 'year',
+            'filter_days' => 365,
+            'continuous_time' => true,
+            'show_blank_data' => true,
+            'where_raw' => "role_id = (SELECT id FROM roles WHERE name = 'student')"
+        ];
+        $chart1 = new LaravelChart($chart_options);
+        return view('admin.home', compact('users', 'all_student_reg_no', 'api_url', 'chart1'));
     });
+
     Route::get('/admin/create', function () {
         $roles = Role::whereNotIn('name', ['super admin', 'student'])->get();
         $users = User::whereHas('role', function ($query) {
@@ -69,7 +82,7 @@ Route::middleware(['auth'])->group(function () {
     })->name('admin.toggleStatus');
     Route::get('admin/users/search', [AuthController::class, 'searchAdmin'])->name('admin.search');
     Route::get('admin/users/{userId}/view', function ($userId) {
-        $user = User::with('role')->findOrFail($userId);
+        $user = User::with(['role', 'appointments'])->findOrFail($userId);
         $roles = Role::where('name', '!=', 'super admin')->get();
         return view('admin.view_admin', [
             'user' => $user,
@@ -352,32 +365,38 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/patient/store', [PatientController::class, 'patientStore'])->name('patient.store');
     Route::get('/admin/patient/search', [PatientController::class, 'searchPatient'])->name('patient.search');
     Route::get('/admin/patient/{userId}/view', function ($userId) {
-        $user = User::with('role')->findOrFail($userId);
+        $user = User::with(['role', 'patientAppointments'])->findOrFail($userId);
         $roles = Role::where('name', '!=', 'Super Admin')->get();
         return view('admin.view_patient', [
             'user' => $user,
             'roles' => $roles,
         ]);
     })->name('admin.patient.view');
-});
-// Electronic Medical Records (EMR)
-Route::get('/admin/emr', [EMRController::class, 'index'])->name('admin.emr.index');
-Route::patch('/admin/emr/patient/{userId}.updateBioData', [EMRController::class, 'updateBioData'])->name('admin.patient.updateBioData');
-Route::patch('/admin/emr/patient/{userId}.updateMedicalHistory', [EMRController::class, 'updateMedicalHistory'])->name('admin.patient.updateMedicalHistory');
-Route::patch('/admin/emr/patient/{userId}.updateInvestigationResults', [EMRController::class, 'updateInvestigationResults'])->name('admin.patient.updateInvestigationResults');
-Route::get('/admin/emr/patient/{userId}.downloadPDF', [EMRController::class, 'downloadPDF'])->name('admin.patient.downloadPDF');
-Route::get('/admin/emr/patient/search', [EMRController::class, 'emrSearchPatient'])->name('emr.patient.search');
+    // Yo
+    Route::delete('/admin/patient/{userId}/delete', [PatientController::class, 'deletePatient'])->name('admin.patient.delete');
+    Route::delete('/admin/staff/{userId}/delete', [AdminController::class, 'deletePatient'])->name('admin.staff.delete');
+    // Electronic Medical Records (EMR)
+    Route::get('/admin/emr', [EMRController::class, 'index'])->name('admin.emr.index');
+    Route::patch('/admin/emr/patient/{userId}.updateBioData', [EMRController::class, 'updateBioData'])->name('admin.patient.updateBioData');
+    Route::patch('/admin/emr/patient/{userId}.updateMedicalHistory', [EMRController::class, 'updateMedicalHistory'])->name('admin.patient.updateMedicalHistory');
+    Route::patch('/admin/emr/patient/{userId}.updateInvestigationResults', [EMRController::class, 'updateInvestigationResults'])->name('admin.patient.updateInvestigationResults');
+    Route::get('/admin/emr/patient/{userId}.downloadPDF', [EMRController::class, 'downloadPDF'])->name('admin.patient.downloadPDF');
+    Route::get('/admin/emr/patient/search', [EMRController::class, 'emrSearchPatient'])->name('emr.patient.search');
 
-// STUDENTS
-Route::get('/student', [PatientController::class, 'index']);
-Route::get('/view/calendar', fn() => view('student.calendar'))->name('calendar');
-Route::get('/student/book/appointment/{userId}', [PatientController::class, 'bookAppointment'])->name('student.book.appointment');
-Route::post('/student/store/appointment/{userId}', [PatientController::class, 'storeAppointment'])->name('student.store.appointment');
-Route::get('/student/doctors/search', [PatientController::class, 'searchDoctors'])->name('doctors.search');
-// FOR BOOKING APPOINTMENTS FOR STUDENTS
-Route::get('/student/appointments', [PatientController::class, 'studentAppointments'])->name('student.appointments');
-Route::get('/student/appointment/{id}/view', [PatientController::class, 'viewAppointment'])->name('appointment.view');
-Route::put('/student/appointment/{id}', [PatientController::class, 'updateAppointment'])->name('appointment.update');
-Route::delete('/student/appointment/{id}', [PatientController::class, 'destroyAppointment'])->name('appointment.destroy');
-// FOR BOOKING APPOINTMENTS FOR ADMIN
-Route::get('/admin/appointments', [AdminController::class, 'adminAppointments'])->name('admin.appointments');
+    // STUDENTS
+    Route::get('/student', [PatientController::class, 'index']);
+    Route::get('/view/calendar', fn() => view('student.calendar'))->name('calendar');
+    Route::get('/student/book/appointment/{userId}', [PatientController::class, 'bookAppointment'])->name('student.book.appointment');
+    Route::post('/student/store/appointment/{userId}', [PatientController::class, 'storeAppointment'])->name('student.store.appointment');
+    Route::get('/student/doctors/search', [PatientController::class, 'searchDoctors'])->name('doctors.search');
+    // FOR BOOKING APPOINTMENTS FOR STUDENTS
+    Route::get('/student/appointments', [PatientController::class, 'studentAppointments'])->name('student.appointments');
+    Route::get('/student/appointment/{id}/view', [PatientController::class, 'viewAppointment'])->name('appointment.view');
+    Route::put('/student/appointment/{id}', [PatientController::class, 'updateAppointment'])->name('appointment.update');
+    Route::delete('/student/appointment/{id}', [PatientController::class, 'destroyAppointment'])->name('appointment.destroy');
+    // FOR BOOKING APPOINTMENTS FOR ADMIN
+    Route::get('/admin/appointments', [AdminController::class, 'adminAppointments'])->name('admin.appointments');
+    Route::put('/admin/appointments/{id}/cancel', [AdminController::class, 'adminCancelAppointments'])->name('appointment.cancel');
+    Route::get('/admin/appointment/{id}/view', [AdminController::class, 'viewAppointment'])->name('admin.appointment.view');
+    Route::put('/admin/appointment/{id}/update', [AdminController::class, 'updateAppointment'])->name('admin.appointment.update');
+});

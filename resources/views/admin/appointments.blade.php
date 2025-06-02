@@ -9,20 +9,20 @@
         <div class="d-flex gap-2">
             <div class="dropdown">
                 <button class="btn btn-outline-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown">
-                    <i class="bi bi-filter me-1"></i>Filter Status
+                    <i class="bi bi-filter me-1"></i>Filter Status: {{ request('status', 'All') }}
                 </button>
                 <ul class="dropdown-menu">
-                    <li><a class="dropdown-item" href="#">All</a></li>
-                    <li><a class="dropdown-item" href="#">Pending</a></li>
-                    <li><a class="dropdown-item" href="#">Approved</a></li>
-                    <li><a class="dropdown-item" href="#">Completed</a></li>
-                    <li><a class="dropdown-item" href="#">Cancelled</a></li>
+                    <li><a class="dropdown-item {{ request('status') == null ? 'active' : '' }}" href="{{ route('admin.appointments') }}">All</a></li>
+                    <li><a class="dropdown-item {{ request('status') == 'pending' ? 'active' : '' }}" href="{{ route('admin.appointments', ['status' => 'pending']) }}">Pending</a></li>
+                    <li><a class="dropdown-item {{ request('status') == 'approved' ? 'active' : '' }}" href="{{ route('admin.appointments', ['status' => 'approved']) }}">Approved</a></li>
+                    <li><a class="dropdown-item {{ request('status') == 'completed' ? 'active' : '' }}" href="{{ route('admin.appointments', ['status' => 'completed']) }}">Completed</a></li>
+                    <li><a class="dropdown-item {{ request('status') == 'cancelled' ? 'active' : '' }}" href="{{ route('admin.appointments', ['status' => 'cancelled']) }}">Cancelled</a></li>
                 </ul>
             </div>
-            <div class="input-group" style="width: 300px;">
-                <input type="text" class="form-control" placeholder="Search student name...">
-                <button class="btn btn-primary"><i class="bi bi-search"></i></button>
-            </div>
+            <form action="{{ route('admin.appointments') }}" method="GET" class="input-group" style="width: 300px;">
+                <input type="text" name="search" class="form-control" placeholder="Search student name..." value="{{ request('search') }}">
+                <button type="submit" class="btn btn-primary"><i class="bi bi-search"></i></button>
+            </form>
         </div>
     </div>
 
@@ -56,27 +56,30 @@
                                             </div>
                                             <div>
                                                 <h6 class="mb-0">{{ $appointment->user->name }}</h6>
-                                                <small class="text-muted">{{ $appointment->user->id }}</small>
+                                                <!-- <small class="text-muted">{{ $appointment->user->id }}</small> -->
                                             </div>
                                         </div>
                                     </td>
                                     <td>
                                         <div>
-                                            <div class="fw-bold">{{ \Carbon\Carbon::parse($appointment->appointment_date)->format('M d, Y') }}</div>
-                                            <small class="text-muted">{{ \Carbon\Carbon::parse($appointment->appointment_time)->format('h:i A') }}</small>
+                                            <div class="fw-bold">{!! $appointment->appointment_date ? \Carbon\Carbon::parse($appointment->appointment_date)->format('M d, Y') : '<i class="text-muted">Waiting to be assigned</i>' !!}</div>
+                                            <small class="text-muted">{!! $appointment->appointment_time ? \Carbon\Carbon::parse($appointment->appointment_time)->format('h:i A') : '<i class="text-muted">Waiting to be assigned</i>' !!}</small>
                                         </div>
                                     </td>
                                     <td>
                                         @php
-                                        $urgencyColor = match(strtolower($appointment->appointment_urgency)) {
-                                            'high' => 'danger',
-                                            'medium' => 'warning',
-                                            'low' => 'success',
+                                        $urgencyColor = match($appointment->appointment_urgency) {
+                                            'Not Urgent - Routine checkup' => 'success',
+                                            'Mild - Minor discomfort' => 'info',
+                                            'Moderate - Noticeable symptoms' => 'primary',
+                                            'Urgent - Significant pain/symptoms' => 'warning',
+                                            'Very Urgent - Severe condition' => 'danger',
+                                            'Emergency - Immediate attention needed' => 'dark',
                                             default => 'secondary'
                                         };
                                         @endphp
-                                        <span class="badge bg-{{ $urgencyColor }}-subtle text-{{ $urgencyColor }}">
-                                            {{ ucwords($appointment->appointment_urgency) }}
+                                        <span class="badge bg-{{ $urgencyColor }}-subtle">
+                                            {{ $appointment->appointment_urgency }}
                                         </span>
                                     </td>
                                     <td>
@@ -89,23 +92,28 @@
                                             default => 'secondary'
                                         };
                                         @endphp
-                                        <span class="badge bg-{{ $statusColor }}-subtle text-{{ $statusColor }}">
+                                        <span class="badge bg-{{ $statusColor }}-subtle">
                                             {{ ucwords($appointment->status) }}
                                         </span>
                                     </td>
                                     <td>
                                         <div class="btn-group">
-                                            <a href="{{ route('appointment.view', $appointment->id) }}" class="btn btn-sm btn-outline-primary" data-bs-toggle="tooltip" title="View Details">
+                                            <a href="{{ route('admin.appointment.view', $appointment->id) }}" class="btn btn-sm btn-outline-primary" data-bs-toggle="tooltip" title="View Details">
                                                 <i class="bi bi-eye"></i>
                                             </a>
-                                            @if($appointment->status === 'Pending')
-                                            <button type="button" class="btn btn-sm btn-outline-success" data-bs-toggle="tooltip" title="Approve">
+                                            @if($appointment->status !== 'approved' && $appointment->status !== 'completed')
+                                            <a href="{{ route('admin.appointment.view', $appointment->id) }}" class="btn btn-sm btn-outline-success" data-bs-toggle="tooltip" title="Approve">
                                                 <i class="bi bi-check-lg"></i>
-                                            </button>
-                                            <button type="button" class="btn btn-sm btn-outline-danger" data-bs-toggle="modal" data-bs-target="#cancelAppointment{{ $appointment->id }}" data-bs-toggle="tooltip" title="Cancel">
-                                                <i class="bi bi-x-lg"></i>
-                                            </button>
+                                            </a>
                                             @endif
+                                            <form action="{{ route('appointment.cancel', $appointment->id) }}" method="POST" class="d-inline">
+                                                @csrf
+                                                @method('PUT')
+                                                <button type="submit" class="btn btn-sm btn-outline-danger" data-bs-toggle="tooltip" title="Cancel">
+                                                    <i class="bi bi-x-lg"></i>
+                                                </button>
+                                            </form>
+
                                         </div>
                                     </td>
                                 </tr>

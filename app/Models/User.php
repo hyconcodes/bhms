@@ -2,10 +2,10 @@
 
 namespace App\Models;
 
-// use Illuminate\Contracts\Auth\MustVerifyEmail;
-
+use App\Models\Appointment;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
@@ -19,27 +19,6 @@ class User extends Authenticatable
      * The attributes that are mass assignable.
      *
      * @var array<int, string>
-     * History of Heart Disease: Yes/No (Incomplete)
-
-History of Respiratory Disease: Yes/No (Incomplete)
-
-History of Tuberculosis: Yes/No (Incomplete)
-
-History of Stomach Disorder: Yes/No (Incomplete)
-
-History of Mental Disorder: Yes/No (Incomplete)
-
-History of Gonorrhea: Yes/No (Incomplete)
-
-History of Syphilis: Yes/No (Incomplete)
-
-History of Epilepsy: Yes/No (Incomplete)
-
-History of Sickle Cell Disease: Yes/No (Incomplete)
-
-Previous Operations: Details (Incomplete)
-
-Other Serious Illnesses: Details (Incomplete)
      */
     protected $fillable = [
         'name',
@@ -143,5 +122,17 @@ Other Serious Illnesses: Details (Incomplete)
                 });
             });
         }
+    }
+
+    // doctor has many appointment
+    public function appointments()
+    {
+        return $this->hasMany(Appointment::class, 'doctor_id');
+    }
+
+    // patient has many appointment
+    public function patientAppointments()
+    {
+        return $this->hasMany(Appointment::class);
     }
 }

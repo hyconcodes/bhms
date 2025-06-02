@@ -44,20 +44,11 @@
                         <span>Dashboard</span>
                     </a>
                 </li>
-                <li class="nav-item dropdown">
-                    <a class="nav-link" href="#patientCollapse" data-bs-toggle="collapse" role="button" aria-expanded="false" aria-controls="patientCollapse">
+                <li class="nav-item">
+                    <a class="nav-link" href="{{route('admin.create.patient')}}">
                         <i class="bi bi-person nav-link-icon" style="font-size: 18px;"></i>
-                        <span>Patient registration</span>
+                        <span>Patient</span>
                     </a>
-                    <div class="collapse close" id="patientCollapse">
-                        <ul class="nav flex-column">
-                            <li class="nav-item">
-                                <a href="{{route('admin.create.patient')}}" class="nav-link ">
-                                    <span>New patient</span>
-                                </a>
-                            </li>
-                        </ul>
-                    </div>
                 </li>
                 <li class="nav-item dropdown">
                     <a class="nav-link" href="{{route('admin.emr.index')}}" id="emrCollapse">
@@ -65,21 +56,14 @@
                         <span>Electronic Medical Records (EMR)</span>
                     </a>
                 </li>
-                <li class="nav-item dropdown">
-                    <a class="nav-link" href="#staffCollapse" data-bs-toggle="collapse" role="button" aria-expanded="false" aria-controls="staffCollapse">
+                @if(Auth::user()->role->name === 'Super Admin')
+                <li class="nav-item">
+                    <a class="nav-link" href="{{ route('admin.create') }}">
                         <i class="bi bi-people nav-link-icon" style="font-size: 18px;"></i>
                         <span>Staff management</span>
                     </a>
-                    <div class="collapse close" id="staffCollapse">
-                        <ul class="nav flex-column">
-                            <li class="nav-item">
-                                <a href="{{ route('admin.create') }}" class="nav-link ">
-                                    <span>New Staff</span>
-                                </a>
-                            </li>
-                        </ul>
-                    </div>
                 </li>
+                @endif
                 @endif
                 <!-- Admins ends -->
                 <!-- Student start -->
