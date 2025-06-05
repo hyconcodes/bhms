@@ -8,6 +8,7 @@ use App\Jobs\UpdateMatricNumbers;
 use App\Models\Role;
 use App\Models\Setting;
 use App\Models\User;
+use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Route;
 use LaravelDaily\LaravelCharts\Classes\LaravelChart;
 
@@ -21,6 +22,11 @@ use LaravelDaily\LaravelCharts\Classes\LaravelChart;
 | be assigned to the "web" middleware group. Make something great!
 |
 */
+
+Route::get('storage-link', function() {
+    Artisan::call('storage:link');
+    return 'Storage link has been created';
+});
 
 Route::middleware(['guest'])->group(function () {
     Route::get('/', fn() => view('auth.login'))->name('login');
