@@ -23,10 +23,22 @@ use LaravelDaily\LaravelCharts\Classes\LaravelChart;
 |
 */
 
-Route::get('storage-link', function() {
+Route::get('storage-links', function() {
     Artisan::call('storage:link');
     return 'Storage link has been created';
 });
+
+Route::get('storage-link', function() {
+    $target = storage_path('app/public');
+    $link = public_path('storage');
+
+    if (!file_exists($link)) {
+        symlink($target, $link); // Alternative logic here
+    }
+
+    return 'Storage link has been created';
+});
+
 
 Route::middleware(['guest'])->group(function () {
     Route::get('/', fn() => view('auth.login'))->name('login');
