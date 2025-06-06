@@ -49,7 +49,7 @@
                                         <div class="d-flex align-items-center">
                                             <div class="avatar avatar-sm me-3">
                                                 @if($appointment->user->avatar === null)
-                                                <img src="{{ asset('storage/' . $appointment->user->profile_picture) }}" alt="Student" class="avatar-img rounded-circle">
+                                                <img src="{{ $appointment->user->profile_picture }}" alt="Student" class="avatar-img rounded-circle">
                                                 @else
                                                 <img src="{{ $appointment->user->avatar }}" alt="Student" class="avatar-img rounded-circle">
                                                 @endif

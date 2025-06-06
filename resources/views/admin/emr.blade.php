@@ -101,7 +101,7 @@
                                 <td>
                                     <div class="avatar avatar-circle avatar-xs me-2">
                                         @if($user->profile_picture)
-                                            <img src="{{ asset('storage/' . $user->profile_picture) }}" alt="Avatar" class="avatar-img" width="30" height="30">
+                                            <img src="{{ $user->profile_picture }}" alt="Avatar" class="avatar-img" width="30" height="30">
                                         @else
                                             <img src="{{ $user->avatar }}" alt="Avatar" class="avatar-img" width="30" height="30">
                                         @endif

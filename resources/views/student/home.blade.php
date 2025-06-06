@@ -33,7 +33,7 @@
                             <div class="card-body text-center">
                                 <div class="avatar avatar-xl avatar-circle {{ $user->status ? 'avatar-online' : 'avatar-busy' }}">
                                     @if($user->avatar === null)
-                                    <img src="{{ asset('storage/' . $user->profile_picture) }}" alt="..." class="avatar-img">
+                                    <img src="{{ $user->profile_picture }}" alt="..." class="avatar-img">
                                     @else
                                     <img src="{{ $user->avatar }}" alt="..." class="avatar-img">
                                     @endif

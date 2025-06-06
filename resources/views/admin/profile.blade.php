@@ -36,7 +36,7 @@
                                     <input type="file" name="profile_picture" class="d-none" onchange="this.form.submit()">
                                 </label>
                                 @if($user->profile_picture)
-                                <img src="{{ asset('storage/' . $user->profile_picture) }}" alt="Profile picture" class="avatar-img" width="112" height="112">
+                                <img src="{{ $user->profile_picture }}" alt="Profile picture" class="avatar-img" width="112" height="112">
                                 @else
                                 <img src="{{ Auth::user()->avatar }}" alt="Profile picture" class="avatar-img" width="112" height="112">
                                 @endif

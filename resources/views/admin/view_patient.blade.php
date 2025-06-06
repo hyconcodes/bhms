@@ -28,7 +28,7 @@
                             <div class="avatar avatar-circle avatar-xxl">
                                 @if($user->profile_picture)
                                 <img
-                                    src="{{ asset('storage/' . $user->profile_picture) }}"
+                                    src="{{ $user->profile_picture }}"
                                     alt="..."
                                     class="avatar-img"
                                     width="112"
@@ -372,7 +372,7 @@
                                                 <div class="d-flex align-items-center">
                                                     <div class="avatar avatar-sm me-3">
                                                         @if($appointment->doctor->avatar === null)
-                                                        <img src="{{ asset('storage/' . $appointment->doctor->profile_picture) }}" alt="Doctor" class="avatar-img rounded-circle">
+                                                        <img src="{{ $appointment->doctor->profile_picture }}" alt="Doctor" class="avatar-img rounded-circle">
                                                         @else
                                                         <img src="{{ $appointment->doctor->avatar }}" alt="Doctor" class="avatar-img rounded-circle">
                                                         @endif

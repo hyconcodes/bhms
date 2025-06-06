@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Mail\WelcomeNewStaffMail;
 use App\Models\Role;
 use App\Models\User;
+use CloudinaryLabs\CloudinaryLaravel\Facades\Cloudinary;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
@@ -123,8 +124,18 @@ class AuthController extends Controller
         ]);
         $user = Auth::user();
         if ($user instanceof \App\Models\User && $request->hasFile('profile_picture')) {
-            $user->profile_picture = $request->file('profile_picture')->store('profile_pictures', 'public');
+            $uploadedFile = $request->file('profile_picture');
+            $result = Cloudinary::upload($uploadedFile->getRealPath(), [
+                'folder' => 'profile_pictures',
+                'transformation' => [
+                    'quality' => 'auto',
+                    'fetch_format' => 'auto'
+                ]
+            ]);
+            $user->profile_picture = $result->getSecurePath();
             $user->save();
+            // dd($result);
+            // dd($user->profile_picture);
         }
         return redirect()->route('admin.profile')->with('success', 'Profile picture updated successfully');
     }

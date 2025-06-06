@@ -109,7 +109,7 @@
                     <a href="{{ route('appointment.view', $appointment->id) }}" class="list-group-item list-group-item-action">
                         <div class="d-flex">
                             <div class="avatar avatar-circle avatar-xs me-2">
-                                <img src="{{ $appointment->doctor->profile_picture ? asset('storage/' . $appointment->doctor->profile_picture) : $appointment->doctor->avatar }}" alt="..." class="avatar-img" width="30" height="30">
+                                <img src="{{ $appointment->doctor->profile_picture ? $appointment->doctor->profile_picture : $appointment->doctor->avatar }}" alt="..." class="avatar-img" width="30" height="30">
                             </div>
 
                             <div class="d-flex flex-column flex-grow-1">
@@ -153,7 +153,7 @@
                     <a href="{{ route('admin.appointment.view', $pendingAppointment->id) }}" class="list-group-item list-group-item-action">
                         <div class="d-flex">
                             <div class="avatar avatar-circle avatar-xs me-2">
-                                <img src="{{ $pendingAppointment->user->profile_picture ? asset('storage/' . $pendingAppointment->user->profile_picture) : $pendingAppointment->user->avatar }}" alt="..." class="avatar-img" width="30" height="30">
+                                <img src="{{ $pendingAppointment->user->profile_picture ? $pendingAppointment->user->profile_picture : $pendingAppointment->user->avatar }}" alt="..." class="avatar-img" width="30" height="30">
                             </div>
 
                             <div class="d-flex flex-column flex-grow-1">
@@ -188,7 +188,7 @@
         <div class="dropdown">
             <a href="javascript: void(0);" class="dropdown-toggle no-arrow d-flex align-items-center justify-content-center bg-white rounded-circle shadow-sm mx-1 mx-lg-2 w-40px h-40px" role="button" data-bs-toggle="dropdown" data-bs-auto-close="outside" aria-haspopup="true" aria-expanded="false" data-bs-offset="0,0">
                 <div class="avatar avatar-circle avatar-sm avatar-online">
-                    <img src="{{ Auth::user()->profile_picture ? asset('storage/' . Auth::user()->profile_picture) : Auth::user()->avatar }}" alt="..." class="avatar-img" width="40" height="40">
+                    <img src="{{ Auth::user()->profile_picture ?  Auth::user()->profile_picture : Auth::user()->avatar }}" alt="..." class="avatar-img" width="40" height="40">
                 </div>
             </a>
 
@@ -196,7 +196,7 @@
                 <div class="dropdown-item-text">
                     <div class="d-flex align-items-center">
                         <div class="avatar avatar-sm avatar-circle">
-                            <img src="{{ Auth::user()->profile_picture ? asset('storage/' . Auth::user()->profile_picture) : Auth::user()->avatar }}" alt="..." class="avatar-img" width="40" height="40">
+                            <img src="{{ Auth::user()->profile_picture ?  Auth::user()->profile_picture : Auth::user()->avatar }}" alt="..." class="avatar-img" width="40" height="40">
                         </div>
                         <div class="flex-grow-1 ms-3">
                             <h4 class="mb-0">{{ Auth::user()->role->name }} {{ Auth::user()->name }}</h4>
