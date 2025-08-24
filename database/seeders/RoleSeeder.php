@@ -13,25 +13,25 @@ class RoleSeeder extends Seeder
      */
     public function run(): void
     {
-        // Role::firstOrCreate(
-        //     ['slug' => 'doctor'],
-        //     ['name' => 'Doctor']
-        // );
-        // Role::firstOrCreate(
-        //     ['slug' => 'nurse'],
-        //     ['name' => 'Nurse']
-        // );
-        // Role::firstOrCreate(
-        //     ['slug' => 'lab_technician'],
-        //     ['name' => 'Lab Technician']
-        // );
-        // Role::firstOrCreate(
-        //     ['slug' => 'super_admin'],
-        //     ['name' => 'Super Admin']
-        // );
-        // Role::firstOrCreate(
-        //     ['slug' => 'student'],
-        //     ['name' => 'Student']
-        // );
+        Role::firstOrCreate(
+            ['slug' => 'doctor'],
+            ['name' => 'Doctor']
+        );
+        Role::firstOrCreate(
+            ['slug' => 'nurse'],
+            ['name' => 'Nurse']
+        );
+        Role::firstOrCreate(
+            ['slug' => 'lab_technician'],
+            ['name' => 'Lab Technician']
+        );
+        Role::firstOrCreate(
+            ['slug' => 'super_admin'],
+            ['name' => 'Super Admin']
+        );
+        Role::firstOrCreate(
+            ['slug' => 'student'],
+            ['name' => 'Student']
+        );
     }
 }

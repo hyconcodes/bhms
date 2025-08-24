@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\ClinicalController;
 use App\Http\Controllers\EMRController;
 use App\Http\Controllers\PatientController;
 use App\Jobs\UpdateMatricNumbers;
@@ -415,6 +416,15 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/admin/emr/patient/search', [EMRController::class, 'emrSearchPatient'])->name('emr.patient.search');
     });
 
+    // Clinical Records Route
+    Route::middleware(['admins'])->group(function () {
+        Route::get('admin/clinical-records', [ClinicalController::class, 'index'])->name('clinical.index');
+        Route::get('/admin/clinical-records/{userId}/view', [ClinicalController::class, 'viewClinicalRecord'])->name('clinical.view');
+        
+        Route::patch('/admin/clinical-records/{userId}/updateVitalSigns', [ClinicalController::class, 'updateVitalSigns'])->name('clinical.updateVitalSigns');
+        Route::patch('/admin/clinical-records/{userId}/updateLabTest', [ClinicalController::class, 'updateLabTest'])->name('clinical.updateLabTest');
+        Route::patch('/admin/clinical-records/{userId}/updateDiagnosisAndPrescription', [ClinicalController::class, 'updateDiagnosisAndPrescription'])->name('clinical.updateDiagnosisAndPrescription');
+    });
     // STUDENTS
     Route::middleware(['student'])->group(function () {
         Route::get('/student', [PatientController::class, 'index']);

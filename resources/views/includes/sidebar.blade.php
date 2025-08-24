@@ -39,26 +39,32 @@
             <ul class="navbar-nav mb-lg-7">
                 @if(Auth::user()->role->name != 'Student')
                 <li class="nav-item">
-                    <a class="nav-link" href="{{url('/dashboard')}}">
+                    <a class="nav-link {{ Request::is('dashboard') ? 'active bg-primary text-white' : '' }}" href="{{url('/dashboard')}}">
                         <i class="bi bi-grid nav-link-icon" style="font-size: 18px;"></i>
                         <span>Dashboard</span>
                     </a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="{{route('admin.create.patient')}}">
+                    <a class="nav-link {{ Request::routeIs('admin.create.patient') ? 'active bg-primary text-white' : '' }}" href="{{route('admin.create.patient')}}">
                         <i class="bi bi-person nav-link-icon" style="font-size: 18px;"></i>
                         <span>Patient</span>
                     </a>
                 </li>
                 <li class="nav-item dropdown">
-                    <a class="nav-link" href="{{route('admin.emr.index')}}" id="emrCollapse">
+                    <a class="nav-link {{ Request::routeIs('admin.emr.index') ? 'active bg-primary text-white' : '' }}" href="{{route('admin.emr.index')}}" id="emrCollapse">
                         <i class="bi bi-file-earmark-medical nav-link-icon" style="font-size: 18px;"></i>
                         <span>Electronic Medical Records (EMR)</span>
                     </a>
                 </li>
+                <li class="nav-item dropdown">
+                    <a class="nav-link {{ Request::routeIs('clinical.*') ? 'active bg-primary text-white' : '' }}" href="{{route('clinical.index')}}" id="emrCollapse">
+                        <i class="bi bi-file-earmark-medical nav-link-icon" style="font-size: 18px;"></i>
+                        <span>Student Clinical Records (SCR)</span>
+                    </a>
+                </li>
                 @if(Auth::user()->role->name === 'Super Admin')
                 <li class="nav-item">
-                    <a class="nav-link" href="{{ route('admin.create') }}">
+                    <a class="nav-link {{ Request::routeIs('admin.create') ? 'active bg-primary text-white' : '' }}" href="{{ route('admin.create') }}">
                         <i class="bi bi-people nav-link-icon" style="font-size: 18px;"></i>
                         <span>Staff management</span>
                     </a>
@@ -69,14 +75,14 @@
                 <!-- Student start -->
                 @if(Auth::user()->role->name === 'Student')
                 <li class="nav-item">
-                    <a class="nav-link" href="{{url('/student')}}">
+                    <a class="nav-link {{ Request::is('student') ? 'active bg-primary text-white' : '' }}" href="{{url('/student')}}">
                         <i class="bi bi-grid nav-link-icon" style="font-size: 18px;"></i>
                         <span>Home</span>
                     </a>
                 </li>
                 @endif
                 <li class="nav-item dropdown">
-                    <a class="nav-link" href="#appointmentCollapse" data-bs-toggle="collapse" role="button" aria-expanded="false" aria-controls="appointmentCollapse">
+                    <a class="nav-link {{ Request::routeIs('admin.appointments') || Request::routeIs('student.appointments') || Request::routeIs('calendar') ? 'active bg-primary text-white' : '' }}" href="#appointmentCollapse" data-bs-toggle="collapse" role="button" aria-expanded="false" aria-controls="appointmentCollapse">
                         <i class="bi bi-calendar-check nav-link-icon" style="font-size: 18px;"></i>
                         <span>Appointment</span>
                     </a>
@@ -85,7 +91,7 @@
                             <!-- For Admins -->
                             @if(Auth::user()->role->name != 'Student')
                             <li class="nav-item">
-                                <a href="{{ route('admin.appointments') }}" class="nav-link ">
+                                <a href="{{ route('admin.appointments') }}" class="nav-link {{ Request::routeIs('admin.appointments') ? 'active bg-primary text-white' : '' }}">
                                     <span>My Appointments</span>
                                 </a>
                             </li>
@@ -93,14 +99,14 @@
                             <!-- For Students -->
                             @if(Auth::user()->role->name === 'Student')
                             <li class="nav-item">
-                                <a href="{{ route('student.appointments') }}" class="nav-link ">
+                                <a href="{{ route('student.appointments') }}" class="nav-link {{ Request::routeIs('student.appointments') ? 'active bg-primary text-white' : '' }}">
                                     <span>Appointments</span>
                                 </a>
                             </li>
                             @endif
                             <!-- For all roles -->
                             <li class="nav-item">
-                                <a href="{{ route('calendar') }}" class="nav-link ">
+                                <a href="{{ route('calendar') }}" class="nav-link {{ Request::routeIs('calendar') ? 'active bg-primary text-white' : '' }}">
                                     <span>Calendar</span>
                                 </a>
                             </li>
