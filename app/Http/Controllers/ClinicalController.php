@@ -19,6 +19,30 @@ class ClinicalController extends Controller
         $user = User::findOrFail($userId);
         return view('clinical.patient', compact('user'));
     }
+
+    public function newRecord(Request $request, $userId)
+    {
+        $user = User::findOrFail($userId);
+        return view('clinical.newRecord', compact('user'));
+    }
+    public function store(Request $request, $userId)
+    {
+        $user = User::findOrFail($userId);
+        // Check if user is Super Admin or Nurse
+        if (!auth()->user()->role->whereIn('name', ['Super Admin', 'Nurse'])->exists()) {
+            return redirect()->back()->with('error', 'Unauthorized access.');
+        }
+        // Check if vital signs record already exists
+        if (Clinical::where('user_id', $userId)->exists()) {
+            return redirect()->back()->with('error', 'Vital signs record already exists for this user.');
+        }
+        // Create new vital signs record
+        Clinical::create([
+            'vital_signs' => $request->vital_signs,
+            'user_id' => $userId,
+        ]);
+        return redirect()->route('clinical.view', $user->id)->with('success', 'Vital signs record created successfully.');
+    }
     // public function updateClinicalRecord(Request $request, $userId)
     // {
     //     $user = User::findOrFail($userId);

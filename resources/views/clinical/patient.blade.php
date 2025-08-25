@@ -206,72 +206,54 @@
                 Clinical Records
             </a>
         </li>
-        @if(auth()->user()->role->name === 'Super Admin')
-        <li class="nav-item" role="presentation">
-            <a
-                href="javascript: void(0);"
-                class="nav-link"
-                id="position-tab"
-                data-bs-toggle="tab"
-                data-bs-target="#position"
-                role="tab"
-                aria-controls="position"
-                aria-selected="true">
-                Change Role
-            </a>
-        </li>
-        @endif
-        <li class="nav-item" role="presentation">
-            <a
-                href="javascript: void(0);"
-                class="nav-link"
-                id="vital-signs-tab"
-                data-bs-toggle="tab"
-                data-bs-target="#vital-signs"
-                role="tab"
-                aria-controls="vital-signs"
-                aria-selected="true">
-                Vital Signs
-            </a>
-        </li>
-        <li class="nav-item" role="presentation">
-            <a
-                href="javascript: void(0);"
-                class="nav-link"
-                id="patient-diagnosis-tab"
-                data-bs-toggle="tab"
-                data-bs-target="#patient-diagnosis"
-                role="tab"
-                aria-controls="patient-diagnosis"
-                aria-selected="true">
-                Patient Diagnosis
-            </a>
-        </li>
-        <li class="nav-item" role="presentation">
-            <a
-                href="javascript: void(0);"
-                class="nav-link"
-                id="lab-test-tab"
-                data-bs-toggle="tab"
-                data-bs-target="#lab-test"
-                role="tab"
-                aria-controls="lab-test"
-                aria-selected="true">
-                Lab Test
-            </a>
-        </li>
 
         <li class="nav-item ms-auto" role="presentation">
-            <a href="{{ route('admin.patient.downloadPDF', $user->id) }}" 
-               class="btn btn-sm btn-primary d-flex align-items-center" 
-               style="margin-top: 4px;">
-                <i class="bi bi-download me-2"></i>
-                Download Patient Data
-            </a>
+            <button type="button" 
+                    class="btn btn-sm btn-primary d-flex align-items-center" 
+                    data-bs-toggle="modal" 
+                    data-bs-target="#newVitalSignsModal"
+                    style="margin-top: 4px;">
+                <i class="bi bi-plus me-2"></i>
+                New Vital Signs
+            </button>
         </li>
     </ul>
 
+    <!-- New Vital Signs Modal -->
+    <div class="modal fade" id="newVitalSignsModal" tabindex="-1" aria-labelledby="newVitalSignsModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="newVitalSignsModalLabel">Record New Vital Signs</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <form action="{{ route('clinical.newRecord', $user->id) }}" method="POST">
+                    @csrf
+                    <div class="modal-body">
+                        <div class="mb-3">
+                            <label for="vital_signs_bp" class="form-label">Blood Pressure</label>
+                            <input type="text" class="form-control" id="vital_signs_bp" name="vital_signs_bp" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="vital_signs_rr" class="form-label">Respiratory Rate</label>
+                            <input type="text" class="form-control" id="vital_signs_rr" name="vital_signs_rr" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="vital_signs_pr" class="form-label">Pulse Rate</label>
+                            <input type="text" class="form-control" id="vital_signs_pr" name="vital_signs_pr" required>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                        <button type="submit" class="btn btn-primary">Save Vital Signs</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
     <div class="tab-content pt-6" id="userTabContent">
+        {{-- Clinical records --}}
         <div
             class="tab-pane fade show active"
             id="clinical-record"
@@ -375,103 +357,6 @@
                     </div> -->
                     <!-- / .row -->
                 </div>
-            </div>
-            <!-- / .row -->
-        </div>
-
-        @if(auth()->user()->role->name === 'Super Admin')
-        <div
-            class="tab-pane fade"
-            id="position"
-            role="tabpanel"
-            aria-labelledby="position-tab">
-            <div class="row mb-6">
-                <form action="{{ route('admin.users.updateRole', $user->id) }}" method="POST">
-                    @csrf
-                    @method('PATCH')
-                    <div class="mb-3">
-                        <label for="role_id" class="form-label">Select New Role</label>
-                        <select class="form-select" id="role_id" name="role_id" required>
-                            @foreach($roles as $role)
-                            <option value="{{ $role->id }}" {{ $user->role_id == $role->id ? 'selected' : '' }}>
-                                {{ $role->name }}
-                            </option>
-                            @endforeach
-                        </select>
-                    </div>
-                    <button type="submit" class="btn btn-primary">Update Role</button>
-                </form>
-            </div>
-            <!-- / .row -->
-        </div>
-        @endif
-
-        <!-- vital-signs -->
-        <div
-            class="tab-pane fade"
-            id="vital-signs"
-            role="tabpanel"
-            aria-labelledby="vital-signs-tab">
-            <div class="row mb-6">
-                <form action="{{ route('clinical.updateVitalSigns', $user->id) }}" method="POST">
-                    @csrf
-                    @method('PATCH')
-                    <div class="row">
-                        <div class="col-12 mb-3">
-                            <label for="vital_signs" class="form-label">Vital Signs</label>
-                            <textarea class="form-control" id="vital_signs" name="vital_signs" rows="4">{{ $user->vital_signs }}</textarea>
-                        </div>
-                    </div>
-                    <button type="submit" class="btn btn-primary">Update Vital Signs</button>
-                </form>
-            </div>
-            <!-- / .row -->
-        </div>
-
-        <!-- mh-data -->
-        <div
-            class="tab-pane fade"
-            id="patient-diagnosis"
-            role="tabpanel"
-            aria-labelledby="patient-diagnosis-tab">
-            <div class="row mb-6">
-                <form action="{{ route('admin.patient.updateMedicalHistory', $user->id) }}" method="POST">
-                    @csrf
-                    @method('PATCH')
-                    <div class="row">
-                        <div class="col-12 mb-3">
-                            <label for="patient_diagnosis" class="form-label">Patient Diagnosis</label>
-                            <textarea class="form-control" id="patient_diagnosis" name="patient_diagnosis" rows="4">{{ $user->patient_diagnosis }}</textarea>
-                        </div>
-                        <div class="col-12 mb-3">
-                            <label for="medication" class="form-label">Prescription</label>
-                            <textarea class="form-control" id="medication" name="medication" rows="3">{{ $user->medication }}</textarea>
-                        </div>
-                    </div>
-                    <button type="submit" class="btn btn-primary">Update</button>
-                </form>
-            </div>
-            <!-- / .row -->
-        </div>
-
-        <!-- ir-data -->
-        <div
-            class="tab-pane fade"
-            id="lab-test"
-            role="tabpanel"
-            aria-labelledby="lab-test-tab">
-            <div class="row mb-6">
-                <form action="{{ route('admin.patient.updateInvestigationResults', $user->id) }}" method="POST">
-                    @csrf
-                    @method('PATCH')
-                    <div class="row">
-                        <div class="col-12 mb-3">
-                            <label for="lab_test" class="form-label">Laboratory Test Results</label>
-                            <textarea class="form-control" id="lab_test" name="lab_test" rows="10">{{ $user->lab_test }}</textarea>
-                        </div>
-                    </div>
-                    <button type="submit" class="btn btn-primary">Update Laboratory Results</button>
-                </form>
             </div>
             <!-- / .row -->
         </div>
