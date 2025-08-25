@@ -422,13 +422,13 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/admin/clinical-records/{userId}/view', [ClinicalController::class, 'viewClinicalRecord'])->name('clinical.view');
         Route::get('/admin/clinical-records/{userId}/newRecord', [ClinicalController::class, 'newRecord'])->name('clinical.newRecord');
         Route::post('/admin/clinical-records/{userId}/store', [ClinicalController::class, 'store'])->name('clinical.store');
-        
+
         Route::get('/admin/clinical-records/{userId}/edit', [ClinicalController::class, 'edit'])->name('clinical.edit');
         Route::put('/admin/clinical-records/{userId}/update', [ClinicalController::class, 'update'])->name('clinical.update');
 
-        Route::patch('/admin/clinical-records/{userId}/updateVitalSigns', [ClinicalController::class, 'updateVitalSigns'])->name('clinical.updateVitalSigns');
-        Route::patch('/admin/clinical-records/{userId}/updateLabTest', [ClinicalController::class, 'updateLabTest'])->name('clinical.updateLabTest');
-        Route::patch('/admin/clinical-records/{userId}/updateDiagnosisAndPrescription', [ClinicalController::class, 'updateDiagnosisAndPrescription'])->name('clinical.updateDiagnosisAndPrescription');
+        // Route::patch('/admin/clinical-records/{userId}/updateVitalSigns', [ClinicalController::class, 'updateVitalSigns'])->name('clinical.updateVitalSigns');
+        // Route::patch('/admin/clinical-records/{userId}/updateLabTest', [ClinicalController::class, 'updateLabTest'])->name('clinical.updateLabTest');
+        // Route::patch('/admin/clinical-records/{userId}/updateDiagnosisAndPrescription', [ClinicalController::class, 'updateDiagnosisAndPrescription'])->name('clinical.updateDiagnosisAndPrescription');
     });
     // STUDENTS
     Route::middleware(['student'])->group(function () {

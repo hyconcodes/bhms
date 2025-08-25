@@ -227,20 +227,12 @@
                     <h5 class="modal-title" id="newVitalSignsModalLabel">Record New Vital Signs</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
-                <form action="{{ route('clinical.newRecord', $user->id) }}" method="POST">
+                <form action="{{ route('clinical.store', $user->id) }}" method="POST">
                     @csrf
                     <div class="modal-body">
                         <div class="mb-3">
-                            <label for="vital_signs_bp" class="form-label">Blood Pressure</label>
-                            <input type="text" class="form-control" id="vital_signs_bp" name="vital_signs_bp" required>
-                        </div>
-                        <div class="mb-3">
-                            <label for="vital_signs_rr" class="form-label">Respiratory Rate</label>
-                            <input type="text" class="form-control" id="vital_signs_rr" name="vital_signs_rr" required>
-                        </div>
-                        <div class="mb-3">
-                            <label for="vital_signs_pr" class="form-label">Pulse Rate</label>
-                            <input type="text" class="form-control" id="vital_signs_pr" name="vital_signs_pr" required>
+                            <label for="vital_signs" class="form-label">Vital Signs</label>
+                            <textarea class="form-control" id="vital_signs" name="vital_signs" rows="4" required placeholder="Enter vital signs details (BP, RR, PR etc.)"></textarea>
                         </div>
                     </div>
                     <div class="modal-footer">
@@ -260,23 +252,14 @@
             role="tabpanel"
             aria-labelledby="clinical-record-tab">
             <div class="row">
-                
-
                 <div class="col">
                     <!-- Card -->
                     <div class="card border-0">
                         <div class="card-header border-0 card-header-space-between">
                             <!-- Title -->
                             <h2 class="card-header-title h4 text-uppercase">
-                                Appointment
+                                Clinical Records
                             </h2>
-
-                            <a
-                                href="#projects"
-                                data-toggle="tabLink"
-                                class="small fw-bold">
-                                <!-- View all -->
-                            </a>
                         </div>
 
                         <!-- Table -->
@@ -284,65 +267,59 @@
                             <table class="table table-hover align-middle">
                                 <thead class="thead-light">
                                     <tr>
-                                        <th>Doctor</th>
-                                        <th>Date & Time</th>
-                                        <th>Urgency Level</th>
-                                        <th>Status</th>
-                                        <!-- <th>Actions</th> -->
+                                        <th>Date</th>
+                                        <th>Vital Signs</th>
+                                        <th>Lab Tests</th>
+                                        <th>Medication</th>
+                                        <th>Diagnosis</th>
+                                        <th>Actions</th>
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    @if(count($user->patientAppointments) > 0)
-                                        @foreach($user->patientAppointments as $appointment)
-                                        <tr>
+                                    @if(count($records) > 0)
+                                        @foreach($records as $record)
+                                        <tr style="cursor: pointer;" onclick="window.location='{{ route('clinical.edit', $record->id) }}'">
                                             <td>
-                                                <div class="d-flex align-items-center">
-                                                    <div class="avatar avatar-sm me-3">
-                                                        @if($appointment->doctor->avatar === null)
-                                                        <img src="{{ $appointment->doctor->profile_picture }}" alt="Doctor" class="avatar-img rounded-circle">
-                                                        @else
-                                                        <img src="{{ $appointment->doctor->avatar }}" alt="Doctor" class="avatar-img rounded-circle">
-                                                        @endif
-                                                    </div>
-                                                    <div>
-                                                        <h6 class="mb-0">{{ $appointment->doctor->name }}</h6>
-                                                    </div>
+                                                <div class="fw-bold">
+                                                    {{ \Carbon\Carbon::parse($record->created_at)->format('M d, Y') }}
+                                                </div>
+                                                <small class="text-muted">
+                                                    {{ \Carbon\Carbon::parse($record->created_at)->format('h:i A') }}
+                                                </small>
+                                            </td>
+                                            <td>
+                                                <div class="text-wrap" style="max-width: 200px;">
+                                                    {{ $record->vital_signs ?? 'Not recorded' }}
                                                 </div>
                                             </td>
                                             <td>
-                                                <div>
-                                                    <div class="fw-bold">{!! $appointment->appointment_date ? \Carbon\Carbon::parse($appointment->appointment_date)->format('M d, Y') : '<i class="text-muted">Waiting to be assigned</i>' !!}</div>
-                                                    <small class="text-muted">{!! $appointment->appointment_time ? \Carbon\Carbon::parse($appointment->appointment_time)->format('h:i A') : '<i class="text-muted">Waiting to be assigned</i>' !!}</small>
+                                                <div class="text-wrap" style="max-width: 200px;">
+                                                    {{ $record->lab_test ?? 'No lab tests' }}
                                                 </div>
                                             </td>
-                                            <td>{{ $appointment->appointment_urgency }}</td>
                                             <td>
-                                                @php
-                                                    $statusColor = match(strtolower($appointment->status)) {
-                                                        'pending' => 'warning',
-                                                        'approved' => 'info',
-                                                        'completed' => 'success',
-                                                        'cancelled' => 'danger',
-                                                        default => 'secondary'
-                                                    };
-                                                @endphp
-                                                <span class="badge bg-{{ $statusColor }}">
-                                                    {{ ucwords($appointment->status) }}
-                                                </span>
+                                                <div class="text-wrap" style="max-width: 200px;">
+                                                    {{ $record->medication ?? 'No medication prescribed' }}
+                                                </div>
                                             </td>
-                                            <!-- <td>
-                                                <a href="{{ route('appointment.view', $appointment->id) }}" class="btn btn-sm btn-outline-primary">
-                                                    <i class="bi bi-eye"></i>
+                                            <td>
+                                                <div class="text-wrap" style="max-width: 200px;">
+                                                    {{ $record->patient_diagnosis ?? 'No diagnosis' }}
+                                                </div>
+                                            </td>
+                                            <td onclick="event.stopPropagation();">
+                                                <a href="{{ route('clinical.edit', $record->id) }}" class="btn btn-sm btn-primary">
+                                                    <i class="bi bi-pencil-square"></i> Edit
                                                 </a>
-                                            </td> -->
+                                            </td>
                                         </tr>
                                         @endforeach
                                     @else
                                         <tr>
-                                            <td colspan="5" class="text-center py-5">
-                                                <i class="bi bi-calendar-x display-1 text-muted mb-4"></i>
-                                                <h4>No Appointments Found</h4>
-                                                <p class="text-muted">This student has not made any appointments yet.</p>
+                                            <td colspan="6" class="text-center py-5">
+                                                <i class="bi bi-journal-medical display-1 text-muted mb-4"></i>
+                                                <h4>No Clinical Records Found</h4>
+                                                <p class="text-muted">This student has no clinical records yet.</p>
                                             </td>
                                         </tr>
                                     @endif
@@ -351,11 +328,6 @@
                         </div>
                         <!-- / .table-responsive -->
                     </div>
-
-                    <!-- <div class="row">
-                        
-                    </div> -->
-                    <!-- / .row -->
                 </div>
             </div>
             <!-- / .row -->

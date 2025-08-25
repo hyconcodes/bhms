@@ -17,13 +17,14 @@ class ClinicalController extends Controller
     public function viewClinicalRecord(Request $request, $userId)
     {
         $user = User::findOrFail($userId);
-        return view('clinical.patient', compact('user'));
+        $records = Clinical::where('user_id', $userId)->get();
+        return view('clinical.patient', compact('user', 'records'));
     }
 
-    public function newRecord(Request $request, $userId)
+    public function edit(Request $request, $recordId)
     {
-        $user = User::findOrFail($userId);
-        return view('clinical.newRecord', compact('user'));
+        $record = Clinical::findOrFail($recordId);
+        return view('clinical.editRecord', compact('record'));
     }
     public function store(Request $request, $userId)
     {
@@ -33,15 +34,21 @@ class ClinicalController extends Controller
             return redirect()->back()->with('error', 'Unauthorized access.');
         }
         // Check if vital signs record already exists
-        if (Clinical::where('user_id', $userId)->exists()) {
-            return redirect()->back()->with('error', 'Vital signs record already exists for this user.');
-        }
+        // if (Clinical::where('user_id', $userId)->exists()) {
+        //     return redirect()->back()->with('error', 'Vital signs record already exists for this user.');
+        // }
         // Create new vital signs record
         Clinical::create([
             'vital_signs' => $request->vital_signs,
             'user_id' => $userId,
         ]);
         return redirect()->route('clinical.view', $user->id)->with('success', 'Vital signs record created successfully.');
+    }
+    public function update(Request $request, $recordId)
+    {
+        $record = Clinical::findOrFail($recordId);
+        $record->update($request->all());
+        return redirect()->route('clinical.view', $record->user_id)->with('success', 'Clinical record updated successfully.');
     }
     // public function updateClinicalRecord(Request $request, $userId)
     // {
