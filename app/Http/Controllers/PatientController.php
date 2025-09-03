@@ -75,6 +75,18 @@ class PatientController extends Controller
         $appointments = Appointment::where('user_id', auth()->user()->id)
             ->orderBy('updated_at', 'desc')
             ->get();
+        // Debug: Check if appointments exist
+        // dd($appointments->count(), $appointments->pluck('status'));
+        // Add this temporarily for testing
+        // if ($appointments->count() === 0) {
+        //     // Create some test data to see if charts work
+        //     $testData = collect([
+        //         (object)['status' => 'pending', 'appointment_date' => now()],
+        //         (object)['status' => 'approved', 'appointment_date' => now()->subMonth()],
+        //         (object)['status' => 'completed', 'appointment_date' => now()->subMonth(2)],
+        //     ]);
+        //     $appointments = $testData;
+        // }
         return view('student.home', compact('users', 'appointments'));
     }
 
